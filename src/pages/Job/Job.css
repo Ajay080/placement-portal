@@ -1,0 +1,230 @@
+.job{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /* width: 100%; */
+    padding:0 20px;
+    padding-top: 2vh;
+    /* padding:10vh 10vw; */
+}
+.job-left{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100%;
+    padding: 0 10px;
+}
+.job-right{
+    width:300px;
+    /* padding:0px; */ /* Remove padding */
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items:center;
+}
+
+.job-cards {
+    display: flex;
+    flex-wrap: wrap; /* Allow the cards to wrap to the next line */
+    justify-content:space-evenly;
+    align-items: center;
+    gap: 10px; /* Add some gap between the cards */
+    height: 85vh;
+    overflow-y: scroll;
+}
+
+.job-cards::-webkit-scrollbar {
+    display: none; /* Hide the scrollbar for WebKit browsers */
+}
+.history::-webkit-scrollbar {
+    display: none; /* Hide the scrollbar for WebKit browsers */
+}
+.job-card-container {
+    margin-bottom: 20px; /* Add some bottom margin to create space between the cards */
+}
+.summary{
+    width: 100%; 
+    margin: 0;
+    padding:0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.history{
+    width: 100%; 
+    margin: 0;
+    padding: 0 15px;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center; 
+    height: 55vh; /* Set max-height */
+    overflow-y: scroll; /* Use auto for overflow-y to show scrollbar only when needed */
+}
+
+.summary_detail{
+    /* width: 400px; */
+    /* min-width:max-content; */
+    width: 100%;
+    min-height: 50px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    margin:5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    border: 1px solid rgb(137, 137, 137);
+}
+.summary_head{
+    width: max-content;
+    margin-right:8px;
+}
+.summary_count{
+    /* border: 1px solid black; */
+    color:rgb(3, 3, 3);
+    font-weight: 400;
+}
+.history_detail{
+
+    width: 100%;
+    min-height: 60px;
+    background-color: rgb(56,156,108);
+    border-radius: 10px;
+    margin:5px 0;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+    color:white
+
+}
+.history_head{
+    display: flex;
+    justify-content: flex-start;
+    align-items: left;
+    /* border: 1px solid blue; */
+
+}
+.history_info{
+    display: flex;
+    justify-content: space-between;
+    /* border: 1px solid rgb(0, 74, 46); */
+    margin-top: 5px;
+
+}
+
+/* .dialog{
+    z-index: 10000;
+} */
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .close-button:hover {
+    background-color: #555;
+  }
+  
+  .dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    /* height: 500px; */
+    background-color: white;
+    color: black;
+    z-index: 9999; /* Ensure it appears on top */
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .dialog_company{
+    font-size: x-large;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  .dialog-header{
+    height: 100px;
+    width:100%;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  .dialog_status, .dialog_company{
+    display: flex;
+    justify-content: content;
+    align-items: center;
+  }
+  .status_button{
+    /* height: 30px; */
+    padding: 5px 20px;
+    font-weight:lighter;
+    color: white;
+    border-radius: 5px;
+    border:1px  rgb(48, 46, 139);
+    background-color:rgb(56,156,108);
+    font-size: large;
+  }
+  .dialog_photo img{
+    height: 100px;
+    width: 100px;
+    object-fit: contain;
+  }
+  .dialog_photo{
+    margin-bottom: 20px;
+  }
+  .dialog_details{
+    /* border:1px solid black; */
+    /* height:200px; */
+    display: flex;
+    justify-content:space-between;
+    align-items:flex-start;
+  }
+  .dialog_details .icon{
+    /* border:1px solid black; */
+    color:rgb(30, 166, 197);
+  }
+
+  .dialog_details_left div,.dialog_details_right div {
+    margin:10px 0;
+  }
+
+  .dialog_details_right div{
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .dialog_details_right .inline-head{
+    margin-right: 20px;
+  }
+  .dialog_type_container{
+    width:100%;
+    padding: 5px 10px;
+    font-size: large;
+    margin-top: 10px;
+    color: white;
+    border-radius: 5px;
+    border:1px  rgb(48, 46, 139);
+    background-color:rgb(56,156,108);
+  }
+
+  .blur {
+    filter: blur(5px); /* Adjust the blur intensity as needed */
+  }
+  
+  .dialog-content {
+    margin-bottom: 20px;
+  }

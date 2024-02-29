@@ -1,0 +1,90 @@
+#jobcard{
+    border:1px solid black;
+    height:auto;
+    width:300px;
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: white;
+}
+
+
+
+#jobcard img{
+    height: 50px;
+    width: 50px;
+    border-radius: 5px;
+    border: 1px solid black;
+}
+
+.jobcard-header{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    padding: 0 10px;
+    padding-top: 3px;
+}
+
+.jobcard-status{
+    display: flex;
+    justify-content:left;
+    align-items:left;
+}
+
+.jobcard-status button{
+    background-color: green;
+    color: white;
+    border-radius: 5px;
+}
+
+.jobcard-company{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.jobcard-timespan{
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0;
+    padding: 0 10px;
+}
+
+.jobcard-timespan div{
+    height: 30px;
+    padding:0;
+}
+
+.jobcard-location, .jobcard-time{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+.jobcard-details{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+.jobcard-ctc, .jobcard-deadline{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.jobcard-category{
+    height: 30px;
+    color: white;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    background-color: rgb(4, 4, 101);
+}
+
+/* Example CSS */
+#jobcard svg {
+  vertical-align: middle; /* Align the icons vertically with the text */
+  margin-right: 5px; /* Add some space between the icon and text */
+}
+
