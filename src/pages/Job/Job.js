@@ -47,6 +47,9 @@ const Job = () => {
 
   return (
     <div>
+    <h3 className="job-card-head">
+        Job Instances
+      </h3>
       <div className={`job ${isDialogOpen ? 'blur' : ''}`}> {/* Apply blur class conditionally */}
           <div className="job-left">
             <div className="job-filter">

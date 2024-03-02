@@ -1,0 +1,294 @@
+.dashboard{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding:0 5vw;
+}
+.dashboard-background{
+    height:25vh;
+    width:100%;
+    border:1px solid black;
+    margin-top:2vh;
+    border-radius: 10px;
+}
+.dashboard-background img{
+    object-fit: fill;
+    height:100%;
+    width:100%;
+    border-radius: 10px;
+}
+.dashboard-details{
+    /* border:1px solid black; */
+    margin-top: 30px;
+    border-radius:10px;
+    width:100%;
+    display: flex;
+    justify-content:space-between;
+}
+.dashboard-details-card{
+    border-radius:10px;
+    margin-left:50px;
+    text-align: center;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding:20px 10px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    z-index: 2000;
+    position: relative; /* Add position relative */
+    top: -5px; /* Adjust the value to your preference */
+    transform: translateY(-10%); /* Center vertically */
+}
+.dashboard-img{
+    height: 100px;
+    width: 100px;
+    border-radius:50%;
+}
+.dashboard-img img{
+    height: 100px;
+    width: 100px;
+    border-radius:50%;
+}
+.dashboard-personal{
+    width:100%;
+    margin-top:40px;
+}
+.personal-div{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+.personal-div-left{
+    text-align: left;
+    margin-right: 100px
+}
+.personal-div-right{
+    text-align: right;
+}
+.dashboard-personal-head{
+    display: flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom: 40px;
+    padding: 10px 10px;
+    background-color: rgb(0, 128, 0);
+    border-radius:5px;
+    color:white
+}
+.personal-edit{
+    padding: 3px 10px;
+    background-color: white;
+    border-radius:5px;
+    font-size:medium;
+}
+.dashboard-details-cap{
+    width: 100%;
+    margin-left: 50px;
+}
+
+.details-cap-button-container{
+    /* border:1px solid black;/ */
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.details-cap-button-container div {
+    width: 100%;
+  }
+  
+  .details-cap-button-container div button {
+    width: 100%;
+    padding: 10px 10px;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    font-size: medium;
+  }
+  
+  .details-cap-button-container div button.selected {
+    background-color: rgb(88, 88, 88);
+  }
+
+  .details-cap-card{
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    width:100%;
+    /* border:1px solid black; */
+    margin-top:30px;
+    /* padding:20px 20px; */
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 450px;
+  }
+
+
+
+  .cap-details-container{
+    height: 340px;
+    overflow-y: scroll;
+  }
+
+  .cap-card-header-details{
+    display: flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom: 40px;
+    padding: 10px 20px;
+    background-color: rgb(0, 128, 0);
+    border-radius:5px;
+    color:white
+}
+
+.cap-div{
+    display: flex;
+    justify-content:space-between;
+    align-items: center;
+    margin: 20px 0;
+    padding: 0 20px;
+}
+.cap-div-left{
+    text-align: left;
+    margin-right: 100px
+}
+.cap-div-right{
+    text-align: right;
+}
+.resume-name-div{
+    height: 50px;
+    overflow: hidden;
+}
+.resume-card{
+    height: max-content;
+    padding-bottom: 3px;
+}
+.current-pass{
+    width:100%;
+}
+.password-name-div{
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    margin: 20px 0;
+    padding: 0 20px;
+}
+.password-name-div-key, .password-name-div-value{
+    margin: 10px 0;
+}
+.password-name-div-value input{
+    width:500px;
+    font-size: larger;
+}
+.password-name-div-submit{
+    margin-top: 40px;
+}
+
+
+
+.academic-edit{
+    padding: 3px 10px;
+    background-color: white;
+    border-radius:5px;
+    font-size:medium;
+}
+
+.additional-edit{
+    padding: 3px 10px;
+    background-color: white;
+    border-radius:5px;
+    font-size:medium;
+}
+
+.resume-edit{
+    padding: 3px 10px;
+    background-color: white;
+    border-radius:5px;
+    font-size:medium;
+}
+
+.password-edit{
+    padding: 3px 10px;
+    border-radius:5px;
+    font-size:medium;
+    background-color: black;
+    color:white
+}
+
+.rule-name-div{
+    max-height:  300px;
+    background-color: black;
+
+    overflow-y: scroll;
+    text-align: left;
+}
+.rule-name-div ul li{
+
+    text-align: left;
+}
+
+@media screen and (max-width: 700px) {
+    .dashboard-details{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .dashboard-details-cap{
+        /* width: 90vw; */
+        justify-content: center;
+        align-items: center;
+        margin:0;
+        margin-bottom: 50px;
+        /* padding:0 10px; */
+    }
+    .details-cap-button-container{
+        /* width:80vw; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .details-cap-button-container div{
+        width:auto
+    }
+    .details-cap-button-container div button{
+        width:auto;
+        font-size:xx-small;
+        height:50px
+    }
+    .dashboard-details-card{
+        margin-left: 0;
+    }
+    .password-name-div-value input{
+        width:100%;
+        font-size: larger;
+    }
+    .resumeDownload{
+        font-size: smaller;
+        padding:0;
+    }
+    .cap-div-left{
+        margin:0;
+    }
+    .rule-name-div{
+        max-height:  300px;   
+        background-color: white; 
+        overflow-y: scroll;
+        text-align: left;
+    }
+    .rule-name-div ul li{
+        color:black;
+        text-align: left;
+    }
+    .password-edit{
+        padding: 3px 10px;
+        border-radius:5px;
+        font-size:medium;
+        background-color: black;
+        color:white
+    }
+}
+
+
+

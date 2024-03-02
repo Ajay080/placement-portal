@@ -23,7 +23,7 @@ const Navbar = () => {
       <div className="brand"><BrandName/></div>
       <div className="navbar-links">
         <ul className={`pages ${showPages ? 'show' : ''}`}>
-          <li>Dashboard</li>
+          <li><Link to="dashboard">Dashboard</Link></li>
           <li>Drops</li>
           <li>< Link to="job">JobBoard</Link></li>
           {/* <li><Link to="job">sdsd</Link></li> */}
