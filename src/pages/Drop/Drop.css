@@ -1,0 +1,50 @@
+.Drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .image-section img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  .drop-detail {
+    display: flex;
+    flex-direction: row; /* Flex as row */
+    justify-content: center;
+    width: 100%; /* Full width */
+    margin-top: 20px; /* Adjust margin as needed */
+  }
+  
+  .regular-drops-section,
+  .starred-drops-section {
+    flex: 1;
+    padding: 0 10px; /* Add horizontal padding */
+  }
+  
+  .section-heading {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .date-container {
+    border-bottom: 1px solid black;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .date-header {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .capsule {
+    width: 100px;
+    height: 50px;
+    background-color: #ccc;
+    margin-right: 10px;
+    margin-bottom: 10px;
+  }
+  

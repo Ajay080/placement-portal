@@ -17,6 +17,18 @@ const Dashboard = (props) => {
     const pdfValue = 'Your PDF value goes here...';
 
 
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+  
+    const handlePasswordChange = (e) => {
+      setPassword(e.target.value);
+    };
+  
+    const handleCheckboxChange = () => {
+      setShowPassword(!showPassword);
+    };
+
+
   return (
     <div className="dashboard">
         <div className="dashboard-background">
@@ -28,8 +40,8 @@ const Dashboard = (props) => {
                     <img src={Profile}></img>
                 </div>
                 <div className="dashboard-name-status">
-                    <p style={{fontWeight: "bold", fontSize: "1.7em"}}>Ajay Singh</p>
-                    <p style={{color: "green", fontSize: "1.2em"}}>Approved</p>
+                    <p style={{fontWeight: "bold", fontSize: "1.7em", margin:'0'}}>Ajay Singh</p>
+                    <p style={{color: "green", fontSize: "1.2em", margin:'0'}}>Approved</p>
                 </div>
                 <div className="dashboard-personal">
                     <div className="dashboard-personal-head">
@@ -332,26 +344,43 @@ const Dashboard = (props) => {
                         </div>
                     </div>
                     <div className='password-name-div'>
-                        <div className="password-name-div-key ">
-                            <b>Name</b>
+                        <div className="password-name-div-row">
+                            <div className="password-name-div-key">
+                                <b>Name</b>
+                            </div>
+                            <div className="password-name-div-value">
+                                <input type="text" className="current-pass"/>
+                            </div>
                         </div>
-                        <div className="password-name-div-value ">
-                            <input className="current-pass" ></input>
+                        <div className="password-name-div-row">
+                            <div className="password-name-div-key">
+                                <b>Email</b>
+                            </div>
+                            <div className="password-name-div-value">
+                                <input type="email" className="current-email"/>
+                            </div>
                         </div>
-                        <div className="password-name-div-key ">
-                            <b>Email</b>
+                        <div className="password-name-div-row">
+                            <div className="password-name-div-key">
+                                <b>Enter Current Password</b>
+                            </div>
+                            <div className="password-name-div-value">
+                                <input type="password" className="current-password" value={password} onChange={handlePasswordChange}/>
+                            </div>
                         </div>
-                        <div className="password-name-div-value ">
-                            <input className="current-email" ></input>
+                        <label htmlFor="showPassword">
+                                <input
+                                type="checkbox"
+                                id="showPassword"
+                                className="current-password"
+                                checked={showPassword}
+                                onChange={handleCheckboxChange}
+                                />
+                                Show Password
+                            </label>
+                        <div className="password-name-div-submit">
+                            <button className='password-edit'>Submit</button>
                         </div>
-                        <div className="password-name-div-key ">
-                            <b>Enter Current Password</b>
-                        </div>
-                        <PasswordInput />
-                        <div className="password-name-div-submit ">
-                            <button className='password-edit'> submit</button>
-                        </div>
-
                     </div>
                 </div>
                 <div className='details-cap-card rule-card' style={{ display: selectedButton === 5 ? 'block' : 'none' }}>

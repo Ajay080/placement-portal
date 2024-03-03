@@ -6,7 +6,6 @@
     color: white;
     padding: 0px 20px;
     box-shadow: rgba(255, 191, 95, 0.767) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-
   }
   .brand {
     font-size: 1.5rem;
@@ -95,6 +94,12 @@
   
   /* Media Query for responsiveness */
   @media (max-width: 768px) {
+    .navbar{
+      z-index: 100000;
+    }
+    .navbar-links{
+      z-index: 100000;
+    }
     .pages {
       display: none;
       flex-direction: column;

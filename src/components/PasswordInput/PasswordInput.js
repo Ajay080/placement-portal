@@ -26,6 +26,7 @@ function PasswordInput() {
         <input
           type="checkbox"
           id="showPassword"
+          className="current-password"
           checked={showPassword}
           onChange={handleCheckboxChange}
         />

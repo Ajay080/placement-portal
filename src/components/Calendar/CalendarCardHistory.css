@@ -1,0 +1,97 @@
+.calendarCardHistory-heading {
+    margin: 10px;
+    margin-bottom: 20px;
+    margin-top: 40px;
+    color: black;
+  }
+  
+  .calendarCardHistory-container {
+    width: 100%;
+  }
+  
+  .calendarCardHistory-history-block {
+    overflow-x: auto;
+  }
+  
+  .calendarCardHistory-history-block::-webkit-scrollbar {
+    display: none; /* Hide the scrollbar */
+  }
+  
+  .calendarCardHistory-history-mock-interval {
+    display: flex;
+    flex-wrap: wrap; /* Allow items to wrap to the next row */
+    justify-content:flex-start; /* Align items in the center */
+  }
+  
+  .calendarCardHistory-card {
+    flex: 0 0 calc(25% - 20px); /* Each card takes up 25% of the container width minus margin */
+    margin: 10px;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 10px;
+    min-width: 300px;
+    box-sizing: border-box; /* Include padding and border in the width calculation */
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+  }
+  
+  .calendarCardHistory-image-container {
+    height: 100px; /* Adjust height as needed */
+    background-color: #ccc; /* Placeholder color */
+    border-radius: 10px;
+  }
+  
+  .calendarCardHistory-image-container img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover; /* Maintain aspect ratio */
+    border-radius: 10px;
+  }
+  
+  .calendarCardHistory-details {
+    margin-top: 20px;
+  }
+  
+  .calendarCardHistory-detail {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .calendarCardHistory-label {
+    font-weight: bold;
+  }
+  
+  @media screen and (max-width: 1100px) {
+    .calendarCardHistory-card {
+      flex: 0 0 calc(33.33% - 20px); /* Show 3 cards per row */
+    }
+    .calendarCardHistory-history-mock-interval{
+        height:60vh;
+        overflow-y: scroll; 
+    }
+    .calendarCardHistory-history-mock-interval::-webkit-scrollbar {
+      display: none; /* Hide the scrollbar */
+    }
+  }
+  
+  @media screen and (max-width: 800px) {
+    .calendarCardHistory-card {
+      flex: 0 0 calc(50% - 20px); /* Show 2 cards per row */
+    }
+    .calendarCardHistory-container{
+      text-align: center;
+    }
+  }
+  
+  @media screen and (max-width: 600px) {
+    .calendarCardHistory-card {
+      flex: 0 0 calc(100% - 20px); /* Show 1 card per row */
+    }
+  }
+  
+  @media screen and (max-width: 400px) {
+    .calendarCardHistory-heading {
+      font-size: 1.5rem; /* Adjust font size for smaller screens */
+    }
+  }
+  

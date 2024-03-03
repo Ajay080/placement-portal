@@ -51,6 +51,7 @@
     height: 100px;
     width: 100px;
     border-radius:50%;
+    object-fit: cover;
 }
 .dashboard-personal{
     width:100%;
@@ -168,25 +169,55 @@
 .current-pass{
     width:100%;
 }
-.password-name-div{
+.password-name-div {
     display: flex;
     flex-direction: column;
-    justify-content:flex-start;
+    justify-content: flex-start;
     margin: 20px 0;
-    padding: 0 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
 }
-.password-name-div-key, .password-name-div-value{
+
+.password-name-div-row {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    margin-bottom: 15px;
+}
+
+.password-name-div-key {
+    width: 200px;
+    font-weight: bold;
     margin: 10px 0;
 }
-.password-name-div-value input{
-    width:500px;
-    font-size: larger;
-}
-.password-name-div-submit{
-    margin-top: 40px;
+
+.password-name-div-value input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
+.password-name-div-submit {
+    margin-top: 20px;
+    text-align: center;
+}
 
+.password-edit {
+    padding: 10px 20px;
+    background-color:black;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.password-edit:hover {
+    background-color: #00b3ad;
+}
 
 .academic-edit{
     padding: 3px 10px;
@@ -209,13 +240,6 @@
     font-size:medium;
 }
 
-.password-edit{
-    padding: 3px 10px;
-    border-radius:5px;
-    font-size:medium;
-    background-color: black;
-    color:white
-}
 
 .rule-name-div{
     max-height:  300px;
@@ -280,13 +304,6 @@
     .rule-name-div ul li{
         color:black;
         text-align: left;
-    }
-    .password-edit{
-        padding: 3px 10px;
-        border-radius:5px;
-        font-size:medium;
-        background-color: black;
-        color:white
     }
 }
 

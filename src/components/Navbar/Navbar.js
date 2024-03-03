@@ -24,10 +24,9 @@ const Navbar = () => {
       <div className="navbar-links">
         <ul className={`pages ${showPages ? 'show' : ''}`}>
           <li><Link to="dashboard">Dashboard</Link></li>
-          <li>Drops</li>
+          <li><Link to="drop">Drops</Link></li>
           <li>< Link to="job">JobBoard</Link></li>
-          {/* <li><Link to="job">sdsd</Link></li> */}
-          <li>Calender</li>
+          <li><Link to="calendar">Calendar</Link></li>
           <li>About us</li>
           {/* Add more page options */}
         </ul>

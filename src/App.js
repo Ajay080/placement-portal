@@ -4,7 +4,8 @@ import Navbar from './components/Navbar/Navbar';
 import './App.css'
 import Job from './pages/Job/Job';
 import Dashboard from './pages/Dashboard/Dashboard';
-import Calender from './pages/Calender/Calender';
+import Calendar from './pages/Calendar/Calendar';
+import Drop from './pages/Drop/Drop';
  
 function App(){
   return (
@@ -15,7 +16,8 @@ function App(){
             <Route path="/" element={<Job/>} />
             <Route path='/job' element={<Job/>} />
             <Route path ='/dashboard' element={<Dashboard/>}/>
-            <Route path ='/calender' element={<Calender/>}/>
+            <Route path ='/calendar' element={<Calendar/>}/>
+            <Route path ='/drop' element={<Drop/>}/>
           </Routes>
         </div>
     </Router>
