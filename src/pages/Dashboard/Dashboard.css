@@ -84,6 +84,7 @@
     padding: 3px 10px;
     background-color: white;
     border-radius:5px;
+    color: black;
     font-size:medium;
 }
 .dashboard-details-cap{
@@ -92,7 +93,6 @@
 }
 
 .details-cap-button-container{
-    /* border:1px solid black;/ */
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -108,7 +108,9 @@
     background-color: black;
     color: white;
     font-weight: bold;
+    border-radius:0;
     font-size: medium;
+    border: 1px solid grey;
   }
   
   .details-cap-button-container div button.selected {
@@ -210,6 +212,7 @@
     padding: 10px 20px;
     background-color:black;
     color: #fff;
+
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -223,6 +226,7 @@
     padding: 3px 10px;
     background-color: white;
     border-radius:5px;
+    color: black;
     font-size:medium;
 }
 
@@ -230,12 +234,14 @@
     padding: 3px 10px;
     background-color: white;
     border-radius:5px;
+    color: black;
     font-size:medium;
 }
 
 .resume-edit{
     padding: 3px 10px;
     background-color: white;
+    color: black;
     border-radius:5px;
     font-size:medium;
 }

@@ -5,7 +5,10 @@
     background-color: #f0f0f0;
     overflow: hidden; /* Ensures the partition line doesn't overflow */
     position: relative;
+    cursor: pointer; /* Change cursor to pointer on hover */
+    z-index: 2; /* Ensure capsules are above backdrop */
 }
+
 
 .time, .view {
     height: 100%;
@@ -41,3 +44,122 @@
     left: 70%;
     transform: translateX(-50%);
 }
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.alert {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 20px;
+  z-index: 1000;
+  height: 70vh;
+  width: 80vw;
+  border-radius: 10px;
+  overflow: auto; /* Add scrollbar if content exceeds container */
+}
+
+  .alert-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .message {
+    font-size: 16px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    height: 80%;
+  }
+  
+  .subject {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    border: 1px solid black;
+    width: 100%;
+    padding: 4px 5px;
+    border-radius: 5px;
+    background-color: antiquewhite;
+    overflow: auto;
+  }
+  
+  .capsule-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .capsule-button-container button {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    height: max-content;
+  }
+  
+  .capsule-button-container button:hover {
+    background-color: #0056b3;
+  }
+
+  .subject-heading{
+    font-size: medium;
+    /* background-color: black; */
+    color: rgb(119, 42, 42);
+  }
+  .subject-message{
+    font-size: small;
+    font-weight: 400;
+    font-size: 16px;
+  }
+  .subject-starred {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    justify-content: center;
+    height:max-content;
+    margin:0 10px
+  }
+  
+  .subject-starred svg {
+    font-size: 1.5em;
+  }
+  
+  .tooltip {
+    position: absolute;
+    top: 50px;
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 100;
+  }
+  
+  .subject-starred:hover .tooltip {
+    opacity: 1;
+  }
+  
+
+  @media screen  and (max-width:700px){
+
+  }

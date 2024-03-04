@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import ResumeDownloadButton from '../../components/ResumeDownloadButton/ResumeDownloadButton'; // Importing the ResumeDownloadButton component
 import { FaFileDownload } from "react-icons/fa";
 import PasswordInput from '../../components/PasswordInput/PasswordInput'; // Importing the PasswordInput component
-
+import PersonalInfoForm from './PersonalInfoForm'; // Corrected import
 
 
 const Dashboard = (props) => {
@@ -19,6 +19,7 @@ const Dashboard = (props) => {
 
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+
   
     const handlePasswordChange = (e) => {
       setPassword(e.target.value);
@@ -26,6 +27,17 @@ const Dashboard = (props) => {
   
     const handleCheckboxChange = () => {
       setShowPassword(!showPassword);
+    };
+
+
+    const [showPersonalInfoForm, setShowPersonalInfoForm] = useState(false);
+
+    const handlePersonalInfoEditClick = () => {
+      setShowPersonalInfoForm(true);
+    };
+    
+    const handleClosePersonalInfoForm = () => {
+      setShowPersonalInfoForm(false);
     };
 
 
@@ -49,7 +61,7 @@ const Dashboard = (props) => {
                             Personal Information
                         </div>
                         <div>
-                            <button className="personal-edit"> Edit</button>
+                        <button className="personal-edit" onClick={handlePersonalInfoEditClick}>Edit</button>
                         </div>
                     </div>
                     <div className='dashboard-personal-name personal-div'>
@@ -414,6 +426,8 @@ const Dashboard = (props) => {
                         </ul>
                     </div>
                 </div>
+                {showPersonalInfoForm && <PersonalInfoForm handleClosePersonalInfoForm={handleClosePersonalInfoForm} />}
+
             </div>
         </div>
       

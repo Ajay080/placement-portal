@@ -3,6 +3,7 @@
     flex-direction: column;
     align-items: center;
     padding:0 5vw;
+    text-align: left;
   }
 
   .drop-background{
@@ -12,10 +13,13 @@
     margin-top:2vh;
     border-radius: 10px;
 }
+.drop-background img{
+    object-fit: fill;
+    height:100%;
+    width:100%;
+    border-radius: 10px;
+}
 
-
-  
-  
   .image-section img {
     max-width: 100%;
     height: auto;
@@ -27,29 +31,55 @@
     justify-content: center;
     width: 100%; /* Full width */
     margin-top: 20px; /* Adjust margin as needed */
+    gap: 10px;
   }
   
-  .regular-drops-section,
-  .starred-drops-section {
-    flex: 1;
+  .regular-drops-section {
+    flex: 80; /* Adjust flex basis to 70% */
     padding: 0 10px; /* Add horizontal padding */
+    border-radius: 10px;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    max-height: 55vh;
+    overflow-y: scroll;
+  }
+
+  .regular-drops-section::-webkit-scrollbar {
+    display: none;
   }
   
   .starred-drops-section {
-    transform: translateY(-10%);
-    z-index: 100;
+    flex: 20; /* Adjust flex basis to 30% */
+    padding: 20px 10px; /* Add horizontal padding */
+    border-radius: 10px;
+    min-width: 320px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;    }
+  
+    .starred-drops-section {
+      /* transform: translateY(-10%); Remove this line */
+      margin-top: -80px; /* Add negative margin instead */
+      max-height: 65vh;
+      overflow-y: scroll;
+    }
+    
+  .starred-drops-section::-webkit-scrollbar {
+    display: none;
   }
   .section-heading {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 10px;
+    text-align: left;
   }
   
   .date-container {
+    display: flex; /* Make it a flex container */
+    flex-wrap: wrap; /* Allow wrapping of flex items */
     border-bottom: 1px solid black;
     padding-bottom: 20px;
     margin-bottom: 20px;
   }
+  
   
   .date-header {
     font-weight: bold;
@@ -63,4 +93,31 @@
     margin-right: 10px;
     margin-bottom: 10px;
   }
-  
+  .section-heading {
+    position: sticky;
+    top: 0;
+    background-color: #ffffff; /* Optional: Add background color */
+    font-size: 24px;
+    font-weight: bold;
+    /* margin: 20px 0; */
+    padding:10px 0;
+    text-align: left;
+  }
+
+
+  @media screen  and (max-width:700px){
+    .Drop{
+      margin-bottom: 30px;
+    }
+    .drop-detail {
+      flex-direction: column;
+    }
+    .starred-drops-section{
+      max-height: 70vh;
+    }
+    .regular-drops-section{
+      margin-bottom: 100px;
+      max-height: 70vh;
+    }
+
+  }
