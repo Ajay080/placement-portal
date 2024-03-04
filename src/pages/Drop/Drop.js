@@ -1,13 +1,14 @@
 import React from 'react';
 import './Drop.css';
+import Capsule from '../../components/Capsule/Capsule';
 
 const Drop = () => {
   return (
     <div className='Drop'>
       {/* Image Section */}
-      <div className='image-section'>
-        <img src='https://via.placeholder.com/800x200' alt='Placeholder Image' />
-      </div>
+      <div className="drop-background">
+            <img src=""></img>
+        </div>
 
       {/* Regular and Starred Drops Section */}
       <div className='drop-detail'>
@@ -19,6 +20,7 @@ const Drop = () => {
             <div className='capsule'></div>
             <div className='capsule'></div>
             <div className='capsule'></div>
+            <Capsule/>
           </div>
           <div className='date-container'>
             <div className='date-header'>March 2, 2024</div>
