@@ -1,7 +1,7 @@
 import React from 'react';
 import './Drop.css';
 import Capsule from '../../components/Capsule/Capsule';
-import Background from '../../Img/background-bg.jpg'
+import Background from '../../Img/Drop.jpg'
 import Alert from '../../components/Capsule/Alert';
 
 const Drop = () => {

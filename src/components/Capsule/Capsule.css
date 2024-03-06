@@ -3,6 +3,8 @@
     height: 50px;
     border-radius: 20px;
     background-color: #f0f0f0;
+    background-image: url('../../Img/multi-green.jpg');
+    background-size:cover;
     overflow: hidden; /* Ensures the partition line doesn't overflow */
     position: relative;
     cursor: pointer; /* Change cursor to pointer on hover */
@@ -21,15 +23,15 @@
 
 .time {
     width: 70%;
-    background-color: #ff8c00; /* Different background color for time */
-    color: white;
+    /* background-color: rgb(10, 147, 67); Different background color for view */
+    color: rgb(255, 255, 255);
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
 .view {
     width: 30%;
-    background-color: #4caf50; /* Different background color for view */
+    background-color: rgb(0, 43, 19); /* Different background color for view */
     color: white;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -51,7 +53,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(7, 40, 24, 0.5);
   z-index: 999;
 }
 

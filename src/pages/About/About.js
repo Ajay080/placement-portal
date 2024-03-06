@@ -1,6 +1,6 @@
 import React from 'react';
 import './About.css'; // Import the CSS file for styling
-import background from '../../Img/profile-icon.jpg'
+import background from '../../Img/ABOUTUS.png'
 import ImageCarousel from '../../components/ImageCarousel/ImageCarousel';
 
 const About = () => {

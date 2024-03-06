@@ -36,8 +36,8 @@ const Navbar = () => {
         {!showPages && showDropdown && (
           <div className="dropdown">
               <ul>
-                <li>Dashboard</li>
-                <li>Logout</li>
+                <li><Link to='dashboard'>Dashboard</Link></li>
+                <li><Link to='login'>Logout</Link></li>
               </ul>
           </div>
         )

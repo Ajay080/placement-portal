@@ -1,5 +1,5 @@
 import './Dashboard.css'
-import Background from '../../Img/background-bg.jpg'
+import Background from '../../Img/multi-blue.jpg'
 import Profile from '../../Img/profile-icon.jpg'
 import React, { useState } from 'react';
 import ResumeDownloadButton from '../../components/ResumeDownloadButton/ResumeDownloadButton'; // Importing the ResumeDownloadButton component

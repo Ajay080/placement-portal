@@ -11,7 +11,7 @@
   padding: 20px; /* Add padding to increase readability */
 }
 .top{
-  border-top:1px solid #212529;
+  /* border-top:1px solid #212529; */
   box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
 }
 
@@ -42,6 +42,7 @@
 .about-image img {
   width: 100%;
   border-radius: 10px;
+  object-fit: cover;
 }
 
 .about-left-grid,
