@@ -6,6 +6,9 @@ import ResumeDownloadButton from '../../components/ResumeDownloadButton/ResumeDo
 import { FaFileDownload } from "react-icons/fa";
 import PasswordInput from '../../components/PasswordInput/PasswordInput'; // Importing the PasswordInput component
 import PersonalInfoForm from './PersonalInfoForm'; // Corrected import
+import AcademicInfoForm from './AcademicInfoForm';
+import AdditionalInfoForm from './AdditionalInfoForm';
+import ResumeInfoForm from './ResumeInfoForm';
 
 
 const Dashboard = (props) => {
@@ -40,6 +43,35 @@ const Dashboard = (props) => {
       setShowPersonalInfoForm(false);
     };
 
+    const [showAcademicInfoForm, setShowAcademicInfoForm] = useState(false);
+
+    const handleAcademicInfoEditClick = () => {
+      setShowAcademicInfoForm(true);
+    };
+    
+    const handleCloseAcademicInfoForm = () => {
+      setShowAcademicInfoForm(false);
+    };
+
+    const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
+
+    const handleAdditionalInfoEditClick = () => {
+      setShowAdditionalInfoForm(true);
+    };
+    
+    const handleCloseAdditionalInfoForm = () => {
+      setShowAdditionalInfoForm(false);
+    };
+
+    const [showResumeInfoForm, setShowResumeInfoForm] = useState(false);
+
+    const handleResumeInfoEditClick = () => {
+      setShowResumeInfoForm(true);
+    };
+    
+    const handleCloseResumeInfoForm = () => {
+      setShowResumeInfoForm(false);
+    };
 
   return (
     <div className="dashboard">
@@ -138,7 +170,7 @@ const Dashboard = (props) => {
                             Academic Information
                         </div>
                         <div>
-                            <button className="academic-edit"> Edit</button>
+                            <button className="academic-edit" onClick={handleAcademicInfoEditClick}> Edit</button>
                         </div>
                     </div>
                     <div className='cap-details-container'>
@@ -212,7 +244,7 @@ const Dashboard = (props) => {
                             Additional Information
                         </div>
                         <div>
-                            <button className="additional-edit"> Edit</button>
+                            <button className="additional-edit" onClick={handleAdditionalInfoEditClick}> Edit</button>
                         </div>
                     </div>
                     <div className='cap-details-container'>
@@ -339,7 +371,7 @@ const Dashboard = (props) => {
                             Resume
                         </div>
                         <div>
-                            <button className="resume-edit"> Edit</button>
+                            <button className="resume-edit" onClick={handleResumeInfoEditClick}> Edit</button>
                         </div>
                     </div>
                     <div className='resume-name-div cap-div'>
@@ -427,7 +459,9 @@ const Dashboard = (props) => {
                     </div>
                 </div>
                 {showPersonalInfoForm && <PersonalInfoForm handleClosePersonalInfoForm={handleClosePersonalInfoForm} />}
-
+                {showAcademicInfoForm && <AcademicInfoForm handleCloseAcademicInfoForm={handleCloseAcademicInfoForm} />}
+                {showAdditionalInfoForm && <AdditionalInfoForm handleCloseAdditionalInfoForm={handleCloseAdditionalInfoForm} />}
+                {showResumeInfoForm && <ResumeInfoForm handleCloseResumeInfoForm={handleCloseResumeInfoForm} />}
             </div>
         </div>
       

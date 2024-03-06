@@ -1,0 +1,60 @@
+.image-carousel-container {
+    /* width:680px; */
+    max-width: 90vw;
+    margin: 70px auto;
+    overflow-x:scroll;
+    margin-bottom: 10vh;
+    border-radius: 10px;
+    border:1px solid black;
+    /* padding: 20px 20px; */
+    display: flex;
+    /* justify-content: center; */
+    /* align-items: center */
+    width: fit-content;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+  }
+
+  .image-carousel-container::-webkit-scrollbar {
+    display: none;
+  }
+  .image-carousel {
+    display: flex;
+    padding: 20px 20px;
+    transition: transform 0.5s ease; /* Smooth transition effect */
+    justify-content: center;
+    align-items: center
+    
+  }
+  
+  .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 0 0 auto;
+    width: 160px; /* Width of each card */
+    margin-right: 20px; /* Margin between cards */
+    border: 1px solid black; /* Border style */
+    height:fit-content;
+    border-radius: 8px; /* Border radius */
+    overflow: hidden; /* Hide overflow content */
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  }
+  
+  .card:last-child {
+    margin-right: 0; /* Remove margin for the last card */
+  }
+  
+  .card-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .card-text {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold
+  }
+  

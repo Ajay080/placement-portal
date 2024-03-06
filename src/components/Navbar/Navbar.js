@@ -27,7 +27,7 @@ const Navbar = () => {
           <li><Link to="drop">Drops</Link></li>
           <li>< Link to="job">JobBoard</Link></li>
           <li><Link to="calendar">Calendar</Link></li>
-          <li>About us</li>
+          <li><Link to="about">About us</Link></li>
           {/* Add more page options */}
         </ul>
         <div className="profile-option profile-icon" onClick={toggleDropDown}>

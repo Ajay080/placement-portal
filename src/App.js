@@ -6,6 +6,7 @@ import Job from './pages/Job/Job';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Calendar from './pages/Calendar/Calendar';
 import Drop from './pages/Drop/Drop';
+import About from './pages/About/About';
  
 function App(){
   return (
@@ -18,6 +19,7 @@ function App(){
             <Route path ='/dashboard' element={<Dashboard/>}/>
             <Route path ='/calendar' element={<Calendar/>}/>
             <Route path ='/drop' element={<Drop/>}/>
+            <Route path ='/about' element={<About/>}/>
           </Routes>
         </div>
     </Router>

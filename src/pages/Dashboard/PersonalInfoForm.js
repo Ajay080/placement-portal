@@ -65,7 +65,7 @@ const PersonalInfoForm = ({ handleClosePersonalInfoForm }) => {
         </div>
         <div className="personal-edit-form-group">
           <label htmlFor="DoB" className="personal-edit-label">Date of Birth</label>
-          <input type="text" id="DoB" name="DoB" value={formData.DoB} onChange={handleChange} className="personal-edit-input" />
+          <input type="date" id="DoB" name="DoB" value={formData.DoB} onChange={handleChange} className="personal-edit-input" />
         </div>
         <div className="personal-edit-form-group">
           <label htmlFor="tag" className="personal-edit-label">Tag</label>
