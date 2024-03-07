@@ -24,7 +24,7 @@
 .login-head{
     text-align: center;
     font-weight: bold;
-    font-size: larger;
+    font-size:30px;
 }
 .login-left{
     flex:50;

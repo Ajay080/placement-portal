@@ -50,6 +50,52 @@ const Job = () => {
     <h3 className="job-card-head">
         Job Instances
       </h3>
+      <div className='jobcard-filter'>
+        <div className="filter-left">
+        
+          <div className='filter-myjob'>
+            {/* <button type='button' className='myjob'>
+              My Jobs
+            </button>
+            <button type="button" className='alljob'>
+              All Jobs
+            </button> */}
+            <select id="myjobfilter" class='sort'>
+                <option value="default">Job filter</option>
+                <option value="priceLowToHigh">My Job</option>
+                <option value="priceHighToLow">All Jobs</option>
+              </select>
+          </div>
+          <div class='filter-sort'>
+              {/* <label for="sortDropdown">Sort:</label> */}
+              <select id="sortDropdown" class='sort'>
+                <option value="4">Sort</option>
+                <option value="1">A to Z</option>
+                <option value="2">Z to A</option>
+                <option value="3">Date Ascending</option>
+                <option value="4">Date Descending</option>
+              </select>
+
+              {/* <label for="filterDropdown">Filter:</label> */}
+              <select id="filterDropdown" class='filter'>
+                <option value="all">Filter</option>
+                <option value="1">Eligible</option>
+                <option value="2">Super Dream Offer</option>
+                <option value="3">Super Dream Intern</option>
+                <option value="4">Super Dream FTE</option>
+                <option value="5">Dream Offer</option>
+                <option value="6">Dream Intern</option>
+                <option value="7">Dream FTE</option>
+                <option value="8">Regular Offer</option>
+                <option value="9">Regular Intern</option>
+                <option value="10">Regular FTE</option>
+              </select>
+            </div>
+        </div>
+        <div className='filter-right'>
+        </div>
+
+      </div>
       <div className={`job ${isDialogOpen ? 'blur' : ''}`}> {/* Apply blur class conditionally */}
           <div className="job-left">
             <div className="job-filter">

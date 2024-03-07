@@ -1,3 +1,4 @@
+
 .job{
     display: flex;
     justify-content: center;
@@ -5,9 +6,73 @@
     /* width: 100%; */
     padding:20px 20px;
     padding-top: 2vh;
+    gap: 30px;
+
     /* padding:10vh 10vw; */
 }
-.job-left{
+
+.filter-sort, .filter-myjob {
+  display: flex;
+  align-items: center;
+  justify-content:space-between;
+  padding: 20px 0;
+  /* margin-top: 20px; */
+}
+ 
+/* .filter-sort label {
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  padding: 8px 12px;
+  margin-right: 10px;
+  font-weight: bold;
+  background-color: #f0f0f0;
+} */
+
+.filter-sort select, .filter-myjob select {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #097f6d;
+  color: white;
+  font-size: medium;
+}
+.filter-sort option, .filter-myjob option {
+  padding: 8px 0;
+  background-color: #ffffff;
+  color:black;
+  text-align: left;
+  border: 1px solid #750c0c;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 65px;
+  margin: 20px 0;
+  margin: 20px 0;
+  /* background-color: #fff; */
+  /* font-size:99px; */
+}
+
+/* .sort {
+  margin-right: 20px;
+} */
+
+/* .filter {
+  margin-left: 20px;
+} */
+
+
+.jobcard-filter{
+  /* border: 1px solid black; */
+ display: flex;
+ justify-content:space-between;
+ align-items: center;
+}
+
+
+
+.job-left, .filter-left{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,7 +80,7 @@
     padding: 0 10px;
     background-color: white;
 }
-.job-right{
+.job-right, .filter-right{
     width:300px;
     /* padding:0px; */ /* Remove padding */
     display: flex;
@@ -23,6 +88,16 @@
     justify-content:center;
     align-items:center;
 }
+
+.filter-left{
+  /* border: 1px solid blue; */
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  padding: 0 40px;
+  gap: 20px;
+}
+
 
 .job-cards {
     display: flex;
@@ -233,8 +308,23 @@
   .job-card-head{
     display:none;
   }
+  /* .filter-right{
+    display: none;
+  } */
 
   @media screen and (max-width: 700px) {
+    .filter-right{
+      display: none;
+    }
+    .filter-left{
+      /* border: 1px solid blue; */
+      display: flex;
+      justify-content:center;
+      align-items: center;
+      font-size: small;
+      padding: 0;
+      gap: 0;
+    }
     .job-card-head{
       text-align: center;
       display:block;
