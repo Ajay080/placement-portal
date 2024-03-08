@@ -94,8 +94,8 @@
   display: flex;
   justify-content:flex-start;
   align-items: center;
-  padding: 0 40px;
-  gap: 20px;
+  padding-left: 5%;
+  /* gap: 20px; */
 }
 
 
@@ -319,11 +319,13 @@
     .filter-left{
       /* border: 1px solid blue; */
       display: flex;
+      flex-direction: column;
       justify-content:center;
       align-items: center;
       font-size: small;
       padding: 0;
       gap: 0;
+      /* border:1px solid black */
     }
     .job-card-head{
       text-align: center;
@@ -379,5 +381,32 @@
     .history{
       margin-bottom: 50px;
     }
+    .filter-myjob{
+      width: 100%;
+      /* border:1px solid red; */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin:0;
+      padding: 0;;
+    }
+    .filter-myjob select, .filter-sort select{
+      width: 60%;
+    }
+    .filter-sort{
+      flex-direction: column;
+      width: 100%;
+
+    }
     
+  }
+
+  @media screen and (max-width:500px) {
+    .job-left{
+      width:90%;
+      padding:20px 0;
+      border-radius: 10px;
+      border:1px solid rgb(187, 187, 187);
+    }
   }

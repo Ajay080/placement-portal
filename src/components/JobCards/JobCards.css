@@ -96,3 +96,15 @@
   margin-right: 5px; /* Add some space between the icon and text */
 }
 
+@media screen and  (max-width:500px){
+    #jobcard{
+        /* border:1px solid black; */
+        height:auto;
+        width:300px;
+        overflow: hidden;
+        border-radius: 10px;
+        background-color: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+    
+}

@@ -88,6 +88,7 @@
     .login{
         flex-direction: column;
     }
+
     .login-left{
         /* display: none; */
         height: 200px;
@@ -103,5 +104,11 @@
     }
     .login-head{
         font-size:20px;
+    }
+}
+
+@media screen and (max-width:500px) {
+    .loginSignup{
+        height: 100%;
     }
 }

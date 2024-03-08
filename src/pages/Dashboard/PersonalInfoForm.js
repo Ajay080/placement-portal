@@ -38,7 +38,7 @@ const PersonalInfoForm = ({ handleClosePersonalInfoForm }) => {
   };
 
   return (
-    <>
+    <div className='pe'>
     {alertOpen && <div className="personal-edit-backdrop" onClick={handleCloseAlert}></div>}
 
     <div className="personal-edit-form-container">
@@ -77,7 +77,7 @@ const PersonalInfoForm = ({ handleClosePersonalInfoForm }) => {
         </div>
       </form>
     </div>
-    </>
+    </div>
   );
 };
 

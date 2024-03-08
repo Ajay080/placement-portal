@@ -13,7 +13,7 @@
   border: 1px solid green;
   border-radius: 8px;
   padding: 20px 20px;
-  width: 30vw;
+  width: 30vw; /* Original width */
   min-width: 400px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -34,8 +34,6 @@
   justify-content: center;
   align-items: flex-start;
 }
-
-
 
 .personal-edit-input {
   width: 95%;
@@ -86,4 +84,34 @@
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
   z-index: 9999; /* Ensure the backdrop covers the entire page */
   pointer-events: none; /* Allow click events to pass through */
+}
+
+@media screen and (max-width: 500px) {
+
+  .personal-edit-form-container {
+    position: fixed;
+    top: 5%;
+    left: 0%;
+    transform: none;
+    z-index: 10000;
+    height: 100vh;
+
+    width: 100%;
+    /* padding: 10px 10px; */
+  }
+
+  .personal-edit-form {
+    border: 1px solid blue;
+    padding: 50px 20px;
+    margin: auto;
+    /* height: 100vh; */
+    width: fit-content;
+    min-width: auto; /* Remove min-width */
+    /* max-height: 70vh; Adjusted max-height */
+    overflow-y: auto; /* Change to auto */
+  }
+
+  .personal-edit-input {
+    width: 300px; /* Adjusted width */
+  }
 }
