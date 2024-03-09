@@ -11,6 +11,9 @@
     font-size: 1.5rem;
     font-weight: bold;
   }
+  .LogoutNav{
+    display: none;
+  }
   
   .navbar-links {
     display: flex;
@@ -96,6 +99,9 @@
   @media (max-width: 768px) {
     .navbar{
       z-index: 100000;
+    }
+    .LogoutNav{
+      display: block
     }
     .navbar-links{
       z-index: 100000;

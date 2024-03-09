@@ -60,13 +60,14 @@ const Job = () => {
             <button type="button" className='alljob'>
               All Jobs
             </button> */}
-            <select id="myjobfilter" class='sort'>
+
+          </div>
+          <div class='filter-sort'>
+          <select id="myjobfilter" class='sort'>
                 <option value="default">Job filter</option>
                 <option value="priceLowToHigh">My Job</option>
                 <option value="priceHighToLow">All Jobs</option>
               </select>
-          </div>
-          <div class='filter-sort'>
               {/* <label for="sortDropdown">Sort:</label> */}
               <select id="sortDropdown" class='sort'>
                 <option value="4">Sort</option>

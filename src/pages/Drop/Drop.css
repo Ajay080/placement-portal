@@ -94,7 +94,7 @@
     margin-bottom: 10px;
   }
   .section-heading {
-    position: sticky;
+    /* position: sticky; */
     top: 0;
     background-color: #ffffff; /* Optional: Add background color */
     font-size: 24px;
@@ -119,5 +119,6 @@
       margin-bottom: 100px;
       max-height: 70vh;
     }
+
 
   }

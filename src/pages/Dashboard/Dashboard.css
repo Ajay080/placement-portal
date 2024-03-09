@@ -197,7 +197,7 @@
 }
 
 .password-name-div-value input {
-    width: 100%;
+    width: 90%;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -275,23 +275,28 @@
     }
     .details-cap-button-container{
         /* width:80vw; */
+        width: 100%;
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
     }
     .details-cap-button-container div{
-        width:auto
+        width:100%;
+        
     }
     .details-cap-button-container div button{
-        width:auto;
-        font-size:xx-small;
-        height:50px
+        width:100%;
+        font-size:medium;
+        height:50px;
+        border-radius: 3px;
+
     }
     .dashboard-details-card{
         margin-left: 0;
     }
     .password-name-div-value input{
-        width:100%;
+        /* width:100%; */
         font-size: larger;
     }
     .resumeDownload{

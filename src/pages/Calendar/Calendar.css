@@ -45,14 +45,14 @@
   }
   
   .form-field input {
-    width: 100%;
+    width: 95%;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
   }
   
   .send-request-btn {
-    width: 100%;
+    width: 95%;
     padding: 10px;
     background-color: #007bff;
     color: white;
@@ -114,6 +114,8 @@
         margin: 0;
         margin-bottom: 50px;
         height: fit-content;
+        min-width: initial;
+
     }
     .calendar-container{
         height: max-content;
@@ -121,4 +123,6 @@
         width:90%;
         overflow:hidden
     }
+      
+
 }

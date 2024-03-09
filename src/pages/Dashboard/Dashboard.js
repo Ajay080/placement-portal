@@ -409,7 +409,7 @@ const Dashboard = (props) => {
                                 <b>Enter Current Password</b>
                             </div>
                             <div className="password-name-div-value">
-                                <input type="password" className="current-password" value={password} onChange={handlePasswordChange}/>
+                                <input type={showPassword?"text":"password"} className="current-password" value={password} onChange={handlePasswordChange}/>
                             </div>
                         </div>
                         <label htmlFor="showPassword">

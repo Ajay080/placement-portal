@@ -22,7 +22,7 @@
 }
 
 .time {
-    width: 70%;
+    width: 65%;
     /* background-color: rgb(10, 147, 67); Different background color for view */
     color: rgb(255, 255, 255);
     border-top-right-radius: 0;
@@ -30,7 +30,7 @@
 }
 
 .view {
-    width: 30%;
+    width: 35%;
     background-color: rgb(0, 43, 19); /* Different background color for view */
     color: white;
     border-top-left-radius: 0;
@@ -170,13 +170,23 @@
 
   @media screen  and (max-width:500px){
     .capsule {
-      width: 120px;
-      height: 50px;
+      width: 90px;
+      height: fit-content;
       border-radius: 20px;
-      font-size: small;
+      font-size: 12px;
+      /* padding: 0 5px; */
     }
     .alert {
       height: 90%;
     }
+    .partition-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background-color: white;
+      left: 65%;
+      transform: translateX(-50%);
+  }
     
   }

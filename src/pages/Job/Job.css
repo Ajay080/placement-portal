@@ -16,6 +16,8 @@
   align-items: center;
   justify-content:space-between;
   padding: 20px 0;
+  padding-bottom: 0;
+  /* margin: 0; */
   /* margin-top: 20px; */
 }
  
@@ -48,7 +50,6 @@
   justify-content: center;
   align-items: center;
   height: 65px;
-  margin: 20px 0;
   margin: 20px 0;
   /* background-color: #fff; */
   /* font-size:99px; */
@@ -94,7 +95,7 @@
   display: flex;
   justify-content:flex-start;
   align-items: center;
-  padding-left: 5%;
+  padding-left: 2%;
   /* gap: 20px; */
 }
 
@@ -104,10 +105,12 @@
     flex-wrap: wrap; /* Allow the cards to wrap to the next line */
     justify-content:space-evenly;
     align-items: center;
-    padding:10px 0;
+    padding:20px 15px;
     gap: 10px; /* Add some gap between the cards */
     height: 85vh;
     overflow-y: scroll;
+    border: 1px solid rgb(192, 192, 192);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;    border-radius: 10px;
 }
 
 .job-cards::-webkit-scrollbar {
@@ -191,6 +194,10 @@
     /* border: 1px solid rgb(0, 74, 46); */
     margin-top: 5px;
 
+}
+
+.filter-sort{
+  gap: 4px;
 }
 
 /* .dialog{
@@ -345,12 +352,13 @@
       width:75%;
       padding:20px 20px;
       border-radius: 10px;
-      border:1px solid rgb(187, 187, 187);
+      /* border:1px solid rgb(187, 187, 187); */
+      padding: 0;
     }
 
     .job-card-container #jobcard{
       border:none;
-      box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+      /* box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px; */
     }
     
     
@@ -406,7 +414,7 @@
     .job-left{
       width:90%;
       padding:20px 0;
+      padding: 0;
       border-radius: 10px;
-      border:1px solid rgb(187, 187, 187);
     }
   }

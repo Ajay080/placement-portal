@@ -31,6 +31,9 @@ const HistoryCard = () => {
           <span className="calendarCardHistory-value">None</span>
         </div>
       </div>
+      <button className="calendarCard-join-button">
+        Not Attended
+      </button>
     </div>
   );
 };

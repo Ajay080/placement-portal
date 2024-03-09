@@ -8,6 +8,11 @@
   .calendarCardHistory-container {
     width: 100%;
   }
+
+  .calendarCardHistory-card  .calendarCard-join-button{
+    background-color: red;
+  }
+  
   
   .calendarCardHistory-history-block {
     overflow-x: auto;
