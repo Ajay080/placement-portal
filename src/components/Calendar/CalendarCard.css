@@ -40,12 +40,14 @@
     height: 100px; /* Adjust height as needed */
     background-color: #ccc; /* Placeholder color */
     border-radius: 10px;
+    border: 1px solid rgb(210, 210, 210);
   }
   .calendarCard-image-container img {
 /* Placeholder color */
     height: 100%;
     width: 100%;
     border-radius:10px;
+    object-fit: cover;
   }
   
   .calendarCard-details {

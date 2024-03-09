@@ -1,6 +1,6 @@
 import React from "react";
 import "./CalendarCardHistory.css"; // Import CSS file for styling
-import backgroundbg  from "../../Img/background-bg.jpg"
+import backgroundbg  from "../../Img/java.jpeg"
 
 const HistoryCard = () => {
   return (

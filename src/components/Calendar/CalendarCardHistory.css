@@ -41,8 +41,9 @@
   
   .calendarCardHistory-image-container {
     height: 100px; /* Adjust height as needed */
-    background-color: #ccc; /* Placeholder color */
+    background-color: #e3e3e3; /* Placeholder color */
     border-radius: 10px;
+    border:1px solid rgb(160, 160, 160)
   }
   
   .calendarCardHistory-image-container img {

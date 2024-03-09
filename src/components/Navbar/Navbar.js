@@ -31,7 +31,7 @@ const Navbar = () => {
           <li className={activeButton === 'dashboard' ? 'active' : ''} onClick={() => handleButtonClick('dashboard')}><Link to="dashboard">Dashboard</Link></li>
           <li className={activeButton === 'drop' ? 'active' : ''} onClick={() => handleButtonClick('drop')}><Link to="drop">Drops</Link></li>
           <li className={activeButton === 'job' ? 'active' : ''} onClick={() => handleButtonClick('job')}><Link to="job">JobBoard</Link></li>
-          <li className={activeButton === 'calendar' ? 'active' : ''} onClick={() => handleButtonClick('calendar')}><Link to="calendar">Calendar</Link></li>
+          <li className={activeButton === 'calendar' ? 'active' : ''} onClick={() => handleButtonClick('calendar')}><Link to="calendar">Interviews</Link></li>
           <li className={activeButton === 'about' ? 'active' : ''} onClick={() => handleButtonClick('about')}><Link to="about">About us</Link></li>
           <li className="LogoutNav"><Link to="/">Logout</Link></li>
         </ul>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import "./CalendarCard.css"; // Import CSS file for styling
-import backgroundbg  from "../../Img/background-bg.jpg"
+import backgroundbg  from "../../Img/django.jpeg"
 const Card = () => {
   return (
     <div className="calendarCard-card">

@@ -62,14 +62,14 @@ const Job = () => {
             </button> */}
 
           </div>
-          <div class='filter-sort'>
-          <select id="myjobfilter" class='sort'>
+          <div className='filter-sort'>
+          <select id="myjobfilter" className='sort'>
                 <option value="default">Job filter</option>
                 <option value="priceLowToHigh">My Job</option>
                 <option value="priceHighToLow">All Jobs</option>
               </select>
               {/* <label for="sortDropdown">Sort:</label> */}
-              <select id="sortDropdown" class='sort'>
+              <select id="sortDropdown" className='sort'>
                 <option value="4">Sort</option>
                 <option value="1">A to Z</option>
                 <option value="2">Z to A</option>
@@ -78,7 +78,7 @@ const Job = () => {
               </select>
 
               {/* <label for="filterDropdown">Filter:</label> */}
-              <select id="filterDropdown" class='filter'>
+              <select id="filterDropdown" className='filter'>
                 <option value="all">Filter</option>
                 <option value="1">Eligible</option>
                 <option value="2">Super Dream Offer</option>
@@ -97,7 +97,7 @@ const Job = () => {
         </div>
 
       </div>
-      <div className={`job ${isDialogOpen ? 'blur' : ''}`}> {/* Apply blur class conditionally */}
+      <div className={`job ${isDialogOpen ? 'blur' : ''}`}> {/* Apply blur className conditionally */}
           <div className="job-left">
             <div className="job-filter">
             </div>
