@@ -92,6 +92,14 @@
     .calendarCardHistory-card {
       flex: 0 0 calc(100% - 20px); /* Show 1 card per row */
     }
+    .calendarCardHistory-card{
+      margin-left:0;
+      margin-right: 0;
+    }
+    .calendarCardHistory-history-mock-interval{
+      display: flex;
+      justify-content: center;
+    }
   }
   
   @media screen and (max-width: 400px) {

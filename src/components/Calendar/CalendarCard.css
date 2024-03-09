@@ -1,37 +1,41 @@
 .calendarCard-heading {
-    margin: 10px;
-    margin-bottom: 20px;
-    color:black
-  }
-  
-  .calendarCard-calendar-container{
-    width: 100%;
-  }
+  margin: 10px;
+  margin-bottom: 20px;
+  color: black;
+}
 
-  .calendarCard-scheduled-block {
-    display: flex;
-    overflow-x: auto;
-    padding: 10px 10px;
-  }
+.calendarCard-calendar-container {
+  width: 100%;
+}
 
-  
-  .calendarCard-scheduled-block::-webkit-scrollbar {
-    display: none; /* Hide the scrollbar */
-  }
-  
-  
-  .calendarCard-scheduled-mock-interval {
-    display: flex;
-    gap: 20px;
-  }
-  
-  .calendarCard-card {
-    min-width: 300px;
-    padding: 20px;
-    border: 1px solid black;
-    border-radius:10px;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;    }
-  
+.calendarCard-scheduled-block {
+  display: flex;
+  overflow-x: scroll; /* Change to scroll for horizontal scrolling */
+  scroll-behavior: smooth;
+
+  padding: 10px 10px;
+}
+
+
+.calendarCard-scheduled-block::-webkit-scrollbar {
+  display: none; /* Hide the scrollbar */
+}
+
+.calendarCard-scheduled-mock-interval {
+  display: flex;
+  gap: 20px;
+}
+
+.calendarCard-card {
+  min-width: 300px;
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 10px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
+
+/* Rest of the CSS code for image container, details, join button, and media queries */
+
   .calendarCard-image-container {
     height: 100px; /* Adjust height as needed */
     background-color: #ccc; /* Placeholder color */
@@ -71,13 +75,13 @@
     height: 10px;
     background-color: black;
     border-radius: 50%;
-    margin-right: 5px;
+    margin-right: 10px;
   }
 
   .arrow-container {
-    width: 30px;
-    height: 30px;
-    border: 1px solid black;
+    /* width: 30px;
+    height: 30px; */
+    /* border: 1px solid black; */
     background-color: #fff; /* Background color of the circle */
     border-radius: 50%; /* Make it a circle */
     display: flex;

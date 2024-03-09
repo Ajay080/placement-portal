@@ -159,6 +159,9 @@ const Job = () => {
             </div>
           </div>
       </div>
+      {isDialogOpen && (
+            <div className="backdrop" onClick={() => setIsDialogOpen(false)}></div>
+        )}
       
       {isDialogOpen && (
           <div className="dialog">

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from 'react';
 import "./CalendarCard.css"; // Import CSS file for styling
 import backgroundbg  from "../../Img/background-bg.jpg"
 const Card = () => {
@@ -38,6 +38,13 @@ const Card = () => {
 };
 
 const CalendarCard = () => {
+  const [isArrowRotated, setIsArrowRotated] = useState(false);
+
+  const handleScrollDown = () => {
+    const scheduledBlock = document.querySelector('.calendarCard-scheduled-block');
+    scheduledBlock.scrollLeft += 300; // Adjust scroll distance as needed
+    setIsArrowRotated(!isArrowRotated); // Toggle arrow rotation
+  };
   return (
     <div className="calendarCard-calendar-container">
       <h1 className="calendarCard-heading">Scheduled</h1>
@@ -48,15 +55,16 @@ const CalendarCard = () => {
           ))}
         </div>
       </div>
-      <div class="calendarCard-rightArrow">
-      <div class="scroll-indicator">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        <div class="arrow-container">
-          <span class="arrow">&#9654;</span>
+      <div className="calendarCard-rightArrow" id="scrollDown" onClick={handleScrollDown}>
+      <div className={`scroll-indicator ${isArrowRotated ? 'rotate' : ''}`} onClick={handleScrollDown}>
+        <span className={`dot ${isArrowRotated ? 'rotate' : ''}`}></span>
+        <span className={`dot ${isArrowRotated ? 'rotate' : ''}`}></span>
+        <span className={`dot ${isArrowRotated ? 'rotate' : ''}`}></span>
+        <div className={`arrow-container ${isArrowRotated ? 'clicked' : ''}`}>
+          <span className="arrow">&#9654;</span>
+        </div>
       </div>
-  </div>
-</div>
-
+      </div>
     </div>
   );
 };
