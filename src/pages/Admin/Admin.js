@@ -4,6 +4,9 @@ import $ from 'jquery';
 import 'datatables.net'; // Import DataTables library
 import EditStudentDetails from './EditStudentDetails';
 import EditPlacementDetails from './EditPlacementDetails'
+import EditJob from './EditJob'
+import EditInterview from './EditInterview'
+import EditDrop from './EditDrop'
 
 const Admin = () => {
     const [selectedButton, setSelectedButton] = useState(0);
@@ -31,6 +34,9 @@ const Admin = () => {
         setSelectedButton(buttonId);
         if(buttonId==1) setStudentFormOpen(true)
         if(buttonId==2) setPlacementFormOpen(true)
+        if(buttonId==3) setJobFormOpen(true)
+        if(buttonId==4) setInterviewFormOpen(true)
+        if(buttonId==5) setDropFormOpen(true)
     };
 
     const handleDownloadResume = (resumeFilename) => {
@@ -50,23 +56,47 @@ const Admin = () => {
       setPlacementFormOpen(false);
     };
 
+
+    const [JobFormOpen, setJobFormOpen] = useState(true);
+
+    const handleCloseJobInfoForm = () => {
+      setJobFormOpen(false);
+    };
+
+    const [InterviewFormOpen, setInterviewFormOpen] = useState(true);
+
+    const handleCloseInterviewInfoForm = () => {
+      setInterviewFormOpen(false);
+    };
+
+    const [DropFormOpen, setDropFormOpen] = useState(true);
+
+    const handleCloseDropInfoForm = () => {
+      setDropFormOpen(false);
+    };
+
+
+
     return (
         <div>
             <div className="Buttons">
                 <div><button className={selectedButton === 1 ? 'selected' : ''} onClick={() => handleButtonClick(1)}>Edit Student Details</button></div>
                 <div><button className={selectedButton === 2 ? 'selected' : ''} onClick={() => handleButtonClick(2)}>Edit Placement rules</button></div>
-                <div><button className={selectedButton === 3 ? 'selected' : ''} onClick={() => handleButtonClick(3)}>Resume</button></div>
-                <div><button className={selectedButton === 4 ? 'selected' : ''} onClick={() => handleButtonClick(4)}>Account Settings</button></div>
-                <div><button className={selectedButton === 5 ? 'selected' : ''} onClick={() => handleButtonClick(5)}>Placement Rules</button></div>
+                <div><button className={selectedButton === 3 ? 'selected' : ''} onClick={() => handleButtonClick(3)}>Add Job</button></div>
+                <div><button className={selectedButton === 4 ? 'selected' : ''} onClick={() => handleButtonClick(4)}>Add Interviews</button></div>
+                <div><button className={selectedButton === 5 ? 'selected' : ''} onClick={() => handleButtonClick(5)}>Add Drops</button></div>
             </div>
             {selectedButton === 1 && StudentFormOpen && <EditStudentDetails handleCloseStudentInfoForm={handleCloseStudentInfoForm} />}
             {selectedButton === 2 && PlacementFormOpen && <EditPlacementDetails handleClosePlacementInfoForm={handleClosePlacementInfoForm} />}
+            {selectedButton === 3 && JobFormOpen && <EditJob handleCloseJobInfoForm={handleCloseJobInfoForm} />}
+            {selectedButton === 4 && InterviewFormOpen && <EditInterview handleCloseInterviewInfoForm={handleCloseInterviewInfoForm} />}
+            {selectedButton === 5 && DropFormOpen && <EditDrop handleCloseDropInfoForm={handleCloseDropInfoForm} />}
             <div className="admin_power">
                 <div className='TableContainer'>
                     <table ref={tableRef} className='DataTable'>
                         <thead>
                             <tr>
-                                <th></th> {/* Empty column for radio buttons */}
+                                <th>#</th> {/* Empty column for radio buttons */}
                                 <th>Registration No</th>
                                 <th>Email</th>
                                 <th>Phone</th>

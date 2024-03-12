@@ -2,15 +2,29 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 2px;
     margin-top: 3vh;
 }
-
+.Buttons button{
+    background-color: black;
+    width: 100%;
+    border-radius: 2px;
+    border:1px solid gray;
+}
+.Buttons button:hover{
+    background-color: rgb(117, 116, 116);
+    width: 100%;
+    border-radius: 2px;
+    border:1px solid gray;
+}
 .admin_power{
     margin-top: 4rem;
     padding: 0 4vw;
     display: flex;
     justify-content: center;
+}
+.admin_power button{
+    background-color: black;
+
 }
 
 /* Admin.css */
@@ -33,7 +47,7 @@
 }
 
 .DataTable th {
-    background-color: #647bff;
+    background-color: #19191a;
     font-weight: bold;
     color:white
 }
@@ -44,4 +58,7 @@
 
 .DataTable tbody tr:hover {
     background-color: #ddd;
+}
+.DataTable{
+    margin-bottom: 30px;
 }
