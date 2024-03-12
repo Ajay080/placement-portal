@@ -8,6 +8,7 @@ import Calendar from './pages/Calendar/Calendar';
 import Drop from './pages/Drop/Drop';
 import About from './pages/About/About';
 import Login from './pages/Login/Login';
+import Admin from './pages/Admin/Admin';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function WithNavbarRoutes() {
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/drop" element={<Drop />} />
         <Route path="/about" element={<About />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </>
   );

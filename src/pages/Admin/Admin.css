@@ -1,0 +1,47 @@
+.Buttons{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+    margin-top: 3vh;
+}
+
+.admin_power{
+    margin-top: 4rem;
+    padding: 0 4vw;
+    display: flex;
+    justify-content: center;
+}
+
+/* Admin.css */
+.TableContainer {
+    width: 90vw;
+    max-width: 90vw;
+    overflow-x: scroll;
+  }
+  
+  .DataTable {
+    width: 100%; /* Set table width to 100% to cover the container width */
+  }
+  
+
+.DataTable th,
+.DataTable td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.DataTable th {
+    background-color: #647bff;
+    font-weight: bold;
+    color:white
+}
+
+.DataTable tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.DataTable tbody tr:hover {
+    background-color: #ddd;
+}

@@ -1,0 +1,121 @@
+/* AcademicInfoForm.css */
+
+.student-edit-form-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+  }
+  
+  .student-edit-form {
+    background-color: #ffffff;
+    border: 1px solid green;
+    border-radius: 8px;
+    padding: 20px 20px;
+    width: 30vw;
+    min-width: 400px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+    max-height: 80vh;
+    overflow-y: scroll;
+  }
+  .student-edit-form::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .student-edit-form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  
+  
+  
+  .student-edit-input {
+    width: 95%;
+    padding: 8px 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .student-edit-form-buttons {
+    margin-top: 20px;
+    text-align: center
+  }
+  
+  .student-edit-submit {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .student-edit-submit:hover {
+    background-color: #0056b3;
+  }
+  
+  .student-edit-cancel {
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    border-radius: 4px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  
+  .student-edit-cancel:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .student-edit-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    z-index: 9999; /* Ensure the backdrop covers the entire page */
+    pointer-events: none; /* Allow click events to pass through */
+  }
+  
+    
+  @media screen and (max-width: 500px) {
+
+    .student-edit-form-container {
+      position: fixed;
+      top: 5%;
+      left: 0%;
+      transform: none;
+      z-index: 10000;
+      height: 100vh;
+  
+      width: 100%;
+      /* padding: 10px 10px; */
+    }
+  
+    .student-edit-form {
+      border: 1px solid blue;
+      padding: 50px 20px;
+      margin: auto;
+      /* height: 100vh; */
+      width: fit-content;
+      min-width: auto; /* Remove min-width */
+      /* max-height: 70vh; Adjusted max-height */
+      overflow-y: auto; /* Change to auto */
+    }
+  
+    .student-edit-input {
+      width: 300px; /* Adjusted width */
+    }
+  }
+  
