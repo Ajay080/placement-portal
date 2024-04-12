@@ -1,4 +1,4 @@
-import {React, useState} from 'react'
+import {React, useEffect, useState} from 'react'
 import JobCards from '../../components/JobCards/JobCards'
 import { FaUser } from 'react-icons/fa';
 import { FaMapMarkerAlt } from 'react-icons/fa';
@@ -6,22 +6,138 @@ import { FaClock } from 'react-icons/fa';
 import { FaDollarSign } from 'react-icons/fa';
 import { FaHourglassHalf } from 'react-icons/fa';
 import profileIconBase from '../../Img/profile-icon.jpg';
+import axios from 'axios'
 
 import './Job.css'
 
+const JobType=['FullTime, Internship', 'Intern + FullTime']
+const CategoryType=['Dream Internship', 'Restricted Dream Internship', 'Regular Offer']
+
+
+function formatDate(dateString) {
+  // Split the date string into an array containing year, month, and day
+  const parts = dateString.split('-');
+
+  // Rearrange the parts to form the desired format
+  const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+  return formattedDate;
+}
 
 const Job = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [jobData, setJobData]=useState([]);
+  const [jobComponent, setJobComponent] = useState([]); // Use state to store job components
+  const [openDialogData, setOpenDialogData]=useState([]);
 
-  const handleJobCardClick = () => {
+  const fetchJobData=async()=>{
+    try {
+      const apiEndPoint = 'http://localhost:8001/jobs';
+      const params = {
+        at: '234, 35',
+        q: 'restaurant'
+      };
+      const response = await axios.get(apiEndPoint, { params });
+      setJobData(response.data);
+    } catch (error) {
+      console.log("got the error", error);
+    }
+  }
+
+  useEffect(()=>{
+    // Fetch job data from API
+    fetchJobData();
+    
+  },[]);
+
+  useEffect(()=>{
+    // Fetch job data from API
+    fillContainer();
+    
+  },[ jobData]);
+  
+
+  const handleJobCardClick = (id) => {
     setIsDialogOpen(true);
+    const filteredJob=jobData.filter(job=>job._id==id);
+    setOpenDialogData(filteredJob[0])
   };
 
-
-  var job_component=[];
-  for(var i=0;i<100;i++){
-    job_component.push(<div className="job-card-container"><JobCards key={i}/></div>)
+  const SetupDialog=()=>{
+    if(!isDialogOpen) return;
+    if(!openDialogData) return;
+    console.log("//", openDialogData)
+    return (
+      <div className="dialog">
+      <div className="dialog-header">
+        <div className='dialog_company'>
+          {openDialogData.companyName}
+        </div>
+        <div className="dialog_status">
+          <button className="status_button"> Apply </button>
+        </div>
+      </div>
+      <div className="dialog_photo">
+        <img src={profileIconBase} alt="company_name"></img>
+      </div>
+      <div className="dialog_details">
+        <div className='dialog_details_left'>
+          <div>
+            <FaMapMarkerAlt className="icon" style={{ marginRight: '10px' }} />
+            <span className="inline"><b>{openDialogData.location ? openDialogData.location:'NA'}</b></span>
+          </div>
+          <div>
+            <FaClock className="icon" style={{ marginRight: '10px' }} />
+            <span className="inline"><b>{openDialogData.TypeName ? JobType[openDialogData.TypeName]:'NA'}</b></span>
+          </div>
+          <div>
+            <FaDollarSign className="icon" style={{ marginRight: '10px' }} />
+            <span className="inline"><b>Rs. {openDialogData.ctc ? openDialogData.ctc:'NA'}</b></span>
+          </div>
+          <div>
+            <FaHourglassHalf className="icon" style={{ marginRight: '10px' }} />
+            <span className="inline"><b>{openDialogData.duration ? openDialogData.duration:'NA'} months</b></span>
+          </div>
+        </div>
+        <div className='dialog_details_right'>
+            <div>
+              <span className="inline-head"><b>Apply Before</b></span>
+              
+              <span className="inline">{openDialogData.applyDeadlineDate ? formatDate(openDialogData.applyDeadlineDate):'NA'} | {openDialogData.applyDeadlineTime ? openDialogData.applyDeadlineTime:'NA'}</span>
+            </div>
+            <div>
+              <span className="inline-head"><b>Starts On</b></span>
+              <span className="inline">{openDialogData.startDate? formatDate(openDialogData.startDate):'NA'}</span>
+            </div>
+            <button className="dialog_type_container">{openDialogData.category?CategoryType[openDialogData.category]:'NA'}</button>
+        </div>
+      </div>
+      <button className="close-button" onClick={() => {setIsDialogOpen(false)}}>Close</button>
+    </div>
+    )
   }
+
+
+  const fillContainer = () => {
+    if (Array.isArray(jobData)) {
+      const updatedJobComponent = jobData.map((job) => (
+          <JobCards
+            key={job._id}
+            company={job.companyName}
+            city={job.city}
+            duration={job.duration}
+            ctc={job.ctc}
+            startDate={job.startDate}
+            status={job.status}
+            imgPath={job.imgPath}
+            onClick={()=>handleJobCardClick(job._id)} // Attach onClick to a clickable element within JobCards
+          />
+
+      ));
+      setJobComponent(updatedJobComponent); // Assuming you have a state variable to store job components
+    }
+  };
+  
 
 
   var history=[];
@@ -43,11 +159,9 @@ const Job = () => {
       </div>
     )
   }
-
-
   return (
     <div>
-    <h3 className="job-card-head">
+      <h3 className="job-card-head">
         Job Instances
       </h3>
       <div className='jobcard-filter'>
@@ -62,6 +176,7 @@ const Job = () => {
             </button> */}
 
           </div>
+
           <div className='filter-sort'>
           <select id="myjobfilter" className='sort'>
                 <option value="default">Job filter</option>
@@ -102,11 +217,12 @@ const Job = () => {
             <div className="job-filter">
             </div>
             <div className="job-cards">
-              {job_component.map((job, index) => (
+              {/* {jobComponent.map((job, index) => (
                 <div className="job-card-container" key={index} onClick={handleJobCardClick}>
                   {job}
                 </div>
-              ))}
+              ))} */}
+              {jobComponent}
             </div>
           </div>
           <div className="job-right">
@@ -160,56 +276,11 @@ const Job = () => {
           </div>
       </div>
       {isDialogOpen && (
-            <div className="backdrop" onClick={() => setIsDialogOpen(false)}></div>
-        )}
+        <div className="backdrop" onClick={() => { setIsDialogOpen(false); setOpenDialogData([]); }}></div>
+      )}
       
       {isDialogOpen && (
-          <div className="dialog">
-            <div className="dialog-header">
-              <div className='dialog_company'>
-                Company Name 1
-              </div>
-              <div className="dialog_status">
-                <button className="status_button"> Apply </button>
-              </div>
-            </div>
-            <div className="dialog_photo">
-              <img src={profileIconBase} alt="company_name"></img>
-            </div>
-            <div className="dialog_details">
-              <div className='dialog_details_left'>
-                <div>
-                  <FaMapMarkerAlt className="icon" style={{ marginRight: '10px' }} />
-                  <span className="inline"><b>Not Provided</b></span>
-                </div>
-                <div>
-                  <FaClock className="icon" style={{ marginRight: '10px' }} />
-                  <span className="inline"><b>Full Time</b></span>
-                </div>
-                <div>
-                  <FaDollarSign className="icon" style={{ marginRight: '10px' }} />
-                  <span className="inline"><b>Rs. 9.5 LPA</b></span>
-                </div>
-                <div>
-                  <FaHourglassHalf className="icon" style={{ marginRight: '10px' }} />
-                  <span className="inline"><b>Duration: 6 months</b></span>
-                </div>
-              </div>
-              <div className='dialog_details_right'>
-                  <div>
-                    <span className="inline-head"><b>Apply Before</b></span>
-                    
-                    <span className="inline">22 Dec 2023 | 14:34</span>
-                  </div>
-                  <div>
-                    <span className="inline-head"><b>Starts On</b></span>
-                    <span className="inline">22 Dec 2023</span>
-                  </div>
-                  <button className="dialog_type_container">Restricted Dream Offer</button>
-              </div>
-            </div>
-            <button className="close-button" onClick={() => setIsDialogOpen(false)}>Close</button>
-          </div>
+          <SetupDialog/>
         )}
     </div>
   );

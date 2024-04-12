@@ -3,43 +3,53 @@ import { FaLocationArrow, FaClock, FaDollarSign, FaCalendarAlt } from 'react-ico
 import './JobCards.css';
 import Dp from '../../Img/LogoCrop.png';
 import IC from '../../Img/profile-icon.jpg';
+function formatDate(dateString) {
+  // Split the date string into an array containing year, month, and day
+  const parts = dateString.split('-');
 
-const JobCards = () => {
+  // Rearrange the parts to form the desired format
+  const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+
+  return formattedDate;
+}
+const JobCards = ({ company, city, duration, ctc, startDate, status, imgPath, onClick }) => {
+
   return (
-    <div id="jobcard">
+    <div id="jobcard" onClick={onClick}>
       <div className="jobcard-header">
         <div className="jobcard-img">
-          <img src={Dp} alt="Company Logo"/>
+          <img src={imgPath} alt="Company Logo"/>
         </div>
         <div className="jobcard-status">
-          <button type="button">Upcoming</button>
+          <button type="button">{status}</button>
         </div>
       </div>
       <div className="jobcard-company">
-        <p>Company Name 1</p>
+        <p>{company}</p>
       </div>
       <div className="jobcard-timespan">
         <div className="jobcard-location">
           <FaLocationArrow />
-          <p>Not Provided</p>
+          <p>{city}</p>
         </div>
         <div className="jobcard-time">
           <FaClock />
-          <p>Full Time</p>
+          <p>{duration}</p>
         </div>
       </div>
       <div className="jobcard-details">
         <div className="jobcard-ctc">
           <FaDollarSign />
-          <p>Rs. 9.5 LPA CTC</p>
+          <p>{`Rs. ${ctc} LPA CTC`}</p>
         </div>
         <div className="jobcard-deadline">
           <FaCalendarAlt />
-          <p>5 Jan 24</p>
+          <p>{formatDate(startDate)}</p>
         </div>
       </div>
       <div className="jobcard-category">
-        <p>Super Dream Offer</p>
+        {/* Assuming you want to display status as the category */}
+        <p>{status}</p>
       </div>
     </div>
   );
