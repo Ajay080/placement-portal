@@ -34,7 +34,8 @@
     padding: 20px;
     border: 1px solid black;
     border-radius: 10px;
-    min-width: 300px;
+    min-width: 330px;
+    width: 100%;
     box-sizing: border-box; /* Include padding and border in the width calculation */
     box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
   }
@@ -72,7 +73,7 @@
       flex: 0 0 calc(33.33% - 20px); /* Show 3 cards per row */
     }
     .calendarCardHistory-history-mock-interval{
-        height:60vh;
+        /* height:60vh; */
         overflow-y: scroll; 
     }
     .calendarCardHistory-history-mock-interval::-webkit-scrollbar {

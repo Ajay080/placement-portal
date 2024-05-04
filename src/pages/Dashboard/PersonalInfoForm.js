@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import './PersonalInfoForm.css';
 import { BsStar, BsStarFill } from 'react-icons/bs';
+import axios from 'axios';
 
 const PersonalInfoForm = ({ handleClosePersonalInfoForm }) => {
   const [alertOpen, setAlertOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
+
   const [formData, setFormData] = useState({
     name: '',
     regNo: '',
@@ -14,8 +17,67 @@ const PersonalInfoForm = ({ handleClosePersonalInfoForm }) => {
     tag:''
   });
 
+  
+  const [studentDetail, setStudentDetail] = useState(null);
+  const getStudentDetails = async () => {
+      try {
+          const url = 'http://localhost:8001/students/6608648c5c049561e85f5f1a';
+          const response = await axios.get(url);
+          setStudentDetail(response.data);
+          populateFormFields(response.data)
+          setLoading(false);
+          console.log("received data is", response.data);
+      } catch (error) {
+          console.log("got the error while fetching the data", error);
+      }
+  };
+  const updateStudentDetails = async () => {
+    try {
+        
+        const url = 'http://localhost:8001/updateStudent/6608648c5c049561e85f5f1a';
+        console.log("form data is", formData.tag)
+        const data={  
+          "name":`${formData.name}`,
+          "registrationNumber":`${formData.regNo}`,
+          "email":formData.email,
+          "phoneNumber":`${formData.phone}`,
+          "gender":`${formData.gender}`,
+          "dob":`${formData.DoB}`,
+          "tag":formData.tag
+        }
+        const response = await axios.post(url, data);
+        console.log("received data is", response);
+        window.location.reload();
+
+    } catch (error) {
+        console.log("got the error while fetching the data", error);
+    }
+};
+
+  const populateFormFields = (data) => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      name: data.name,
+      regNo: data.registrationNumber,
+      // age: data.age.toString(),
+      email: data.email,
+      phone: data.phoneNumber,
+      DoB: new Date(data.dob).toISOString().split('T')[0],
+      // type: data.type,
+      // branch: data.branch,
+      gender: data.gender,
+      tag:data.tag
+      // status: data.status,
+      // placed: data.placed
+    }));
+  };
+  
+  
+
+
   useEffect(() => {
     if (alertOpen) {
+      getStudentDetails();
       document.body.classList.add('personal-edit-form-open');
     } else {
       document.body.classList.remove('personal-edit-form-open');
@@ -23,12 +85,18 @@ const PersonalInfoForm = ({ handleClosePersonalInfoForm }) => {
   }, [alertOpen]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [name]: value
+    }));
   };
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Add your form submission logic here
+    updateStudentDetails();
     handleCloseAlert();
   };
 

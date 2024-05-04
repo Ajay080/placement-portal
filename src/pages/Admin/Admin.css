@@ -9,6 +9,9 @@
     width: 100%;
     border-radius: 2px;
     border:1px solid gray;
+    color:white;
+    font-size: 13px;
+    padding:10px 10px;
 }
 .Buttons button:hover{
     background-color: rgb(117, 116, 116);
@@ -24,6 +27,7 @@
 }
 .admin_power button{
     background-color: black;
+    color:white
 
 }
 

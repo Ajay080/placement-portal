@@ -6,6 +6,12 @@
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10000;
+    max-height: 80vh;
+    overflow-y: scroll;
+  }
+
+  .additional-edit-form-container::-webkit-scrollbar {
+    display: none;
   }
   
   .additional-edit-form {
@@ -20,12 +26,9 @@
     flex-direction: column;
     justify-content: center;
     align-items: left;
-    max-height: 80vh;
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
   }
-  .additional-edit-form::-webkit-scrollbar {
-    display: none;
-  }
+
   
   .additional-edit-form-group {
     margin-bottom: 15px;

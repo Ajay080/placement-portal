@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './AdditionalInfoForm.css';
 import { BsStar, BsStarFill } from 'react-icons/bs';
+import axios from 'axios';
+import Select from 'react-dropdown-select';
+
 
 const AdditionalInfoForm = ({ handleCloseAdditionalInfoForm }) => {
   const [alertOpen, setAlertOpen] = useState(true);
@@ -11,11 +14,119 @@ const AdditionalInfoForm = ({ handleCloseAdditionalInfoForm }) => {
     phone: '',
     gender:'',
     DoB:'',
-    tag:''
+    tag:'',
+    age: '',
+    status: '',
+    cgpa: '',
+    tenthMarks: '',
+    twelfthMarks: '',
+    year: '',
+    type: [],
+    branch: '',
+    placed:''
   });
+  const [studentDetail, setStudentDetail] = useState(null);
+
+  const getStudentDetails = async () => {
+    try {
+        const url = 'http://localhost:8001/students/6608648c5c049561e85f5f1a';
+        const response = await axios.get(url);
+        setStudentDetail(response.data);
+        populateFormFields(response.data)
+        // setLoading(false);
+        console.log("received data is", response.data);
+    } catch (error) {
+        console.log("got the error while fetching the data", error);
+    }
+};
+
+const updateStudentDetails = async () => {
+  try {
+      
+      const url = 'http://localhost:8001/updateStudent/6608648c5c049561e85f5f1a';
+      console.log("form data is", formData.tag)
+      const data={  
+        "name":`${formData.name}`,
+        "registrationNumber":`${formData.regNo}`,
+        "email":formData.email,
+        "phoneNumber":`${formData.phone}`,
+        "gender":`${formData.gender}`,
+        "dob":`${formData.DoB}`,
+        "tag":formData.tag,
+        "year":formData.year,
+        "type":formData.type,
+        "tenthMarks":formData.tenthMarks,
+        "twelfthMarks":formData.twelfthMarks,
+        "year":formData.year,
+        "branch":formData.branch,
+        "cgpa":formData.cgpa,
+        "age":formData.age,
+      }
+      const response = await axios.post(url, data);
+      console.log("received data is", response);
+      window.location.reload();
+
+  } catch (error) {
+      console.log("got the error while fetching the data", error);
+  }
+};
+
+const handleTypeChange = (selectedTypes) => {
+  setFormData(prevFormData => ({
+    ...prevFormData,
+    type: selectedTypes.map(type => type.value)
+  }));
+};
+
+const populateFormFields = (data) => {
+  setFormData(prevFormData => ({
+    ...prevFormData,
+    name: data.name,
+    regNo: data.registrationNumber,
+    age: data.age.toString(),
+    email: data.email,
+    phone: data.phoneNumber,
+    DoB: new Date(data.dob).toISOString().split('T')[0],
+    cgpa:data.cgpa,
+    tenthMarks:data.tenthMarks,
+    twelfthMarks:data.twelfthMarks,
+    // "type": data.type.map(type => {
+    //   // Map string values to their corresponding numeric values
+    //   switch (type) {
+    //     case 'Full-time':
+    //       return 1;
+    //     case 'Part-time':
+    //       return 2;
+    //     case 'Internship':
+    //       return 3;
+    //     case 'Contract':
+    //       return 4;
+    //     default:
+    //       return null;
+    //   }
+    // }),    
+    branch: data.branch,
+    gender: data.gender,
+    tag:data.tag,
+    year:data.year,
+    status: data.status,
+    placed: data.placed,
+  }));
+};
+
+const TypeOptions = [
+  { value: 1, label: 'Full-time' },
+  { value: 2, label: 'Part-time' },
+  { value: 3, label: 'Internship' },
+  { value: 4, label: 'Contract' }
+  // Add more options as needed
+];
+
+
 
   useEffect(() => {
     if (alertOpen) {
+      getStudentDetails();
       document.body.classList.add('additional-edit-form-open');
     } else {
       document.body.classList.remove('additional-edit-form-open');
@@ -23,12 +134,16 @@ const AdditionalInfoForm = ({ handleCloseAdditionalInfoForm }) => {
   }, [alertOpen]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      [name]: value
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add your form submission logic here
+    updateStudentDetails();
     handleCloseAlert();
   };
 
@@ -71,6 +186,48 @@ const AdditionalInfoForm = ({ handleCloseAdditionalInfoForm }) => {
           <label htmlFor="tag" className="additional-edit-label">Tag</label>
           <input type="text" id="tag" name="tag" value={formData.tag} onChange={handleChange} className="additional-edit-input" />
         </div>
+        {/* Additional fields */}
+        <div className="additional-edit-form-group">
+          <label htmlFor="age" className="additional-edit-label">Age</label>
+          <input type="number" id="age" name="age" value={formData.age} onChange={handleChange} className="additional-edit-input" />
+        </div>
+        <div className="additional-edit-form-group">
+          <label htmlFor="cgpa" className="additional-edit-label">CGPA</label>
+          <input type="number" id="cgpa" name="cgpa" value={formData.cgpa} onChange={handleChange} className="additional-edit-input" />
+        </div>
+        <div className="additional-edit-form-group">
+          <label htmlFor="tenthMarks" className="additional-edit-label">10th Marks</label>
+          <input type="text" id="tenthMarks" name="tenthMarks" value={formData.tenthMarks} onChange={handleChange} className="additional-edit-input" />
+        </div>
+        <div className="additional-edit-form-group">
+          <label htmlFor="twelfthMarks" className="additional-edit-label">12th Marks</label>
+          <input type="text" id="twelfthMarks" name="twelfthMarks" value={formData.twelfthMarks} onChange={handleChange} className="additional-edit-input" />
+        </div>
+        <div className="additional-edit-form-group">
+          <label htmlFor="branch" className="additional-edit-label">Branch</label>
+          <input disabled type="text" id="branch" name="branch" value={formData.branch} onChange={handleChange} className="additional-edit-input" />
+        </div>
+        <div className="additional-edit-form-group">
+          <label htmlFor="year" className="additional-edit-label">Year</label>
+          <input type="text" id="year" name="year" value={formData.year} onChange={handleChange} className="additional-edit-input" />
+        </div>
+        <div className="additional-edit-form-group">
+          <label htmlFor="type" className="additional-edit-label">Type</label>
+          <Select
+            name="type"
+            id="type"
+            multi
+            options={TypeOptions}
+            onChange={handleTypeChange}
+            values={formData.type.map(type => ({ value: type, label: type }))}
+          />
+        </div>
+        <div  className="additional-edit-form-group">
+          <label htmlFor="placed" className="additional-edit-label">Placed</label>
+          <input  type="checkbox" id="placed" name="placed" checked={formData.placed} onChange={handleChange} className="additional-edit-input" />
+        </div>
+        
+        {/* Add more fields here */}
         <div className="additional-edit-form-buttons">
           <button type="submit" className="additional-edit-submit">Submit</button>
           <button type="button" onClick={handleCloseAdditionalInfoForm} className="additional-edit-cancel">Cancel</button>
