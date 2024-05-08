@@ -47,11 +47,11 @@ const addDrops = async () => {
       const currentDate = new Date();
 
       // Format the current date as "dd-mm-yyyy"
-      const formattedDate = `${currentDate.getDate()}-${currentDate.getMonth() + 1}-${currentDate.getFullYear()}`;
-
+      const formattedDate = `${currentDate.getDate()}-${currentDate.getMonth() + 2}-${currentDate.getFullYear()}`;
+      
       // Format the current time as "hh:mm"
-      const formattedTime = `${currentDate.getHours()}:${currentDate.getMinutes()}`;
-
+      const formattedTime = `${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}`;
+      
       const data = {
         "subject": formData.subject,
         "message": formData.message,
@@ -75,7 +75,7 @@ const addDrops = async () => {
       console.group("sending data is",data)
       const response = await axios.post(url, data);
       console.log("received data is", response);
-      window.location.reload();
+      // window.location.reload();
 
   } catch (error) {
       console.log("got the error while fetching the data", error);
@@ -113,7 +113,8 @@ const addDrops = async () => {
     { value: '2020', label: '2020' },
     { value: '2021', label: '2021' },
     { value: '2022', label: '2022' },
-    { value: '2023', label: '2023' }
+    { value: '2023', label: '2023' },
+    { value: '2024', label: '2024' }
     // Add more options as needed
   ];
   

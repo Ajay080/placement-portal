@@ -12,7 +12,24 @@ function formatDate(dateString) {
 
   return formattedDate;
 }
-const JobCards = ({ company, city, duration, ctc, startDate, status, imgPath, onClick }) => {
+const JobCards = ({ company, city, duration, ctc, startDate, status, imgPath, category, onClick }) => {
+  const CategoryOptions = [
+    { value: 1, label: 'Super Dream Offer' },
+    { value: 2, label: 'Super Dream Internship' },
+    { value: 3, label: 'Super Dream FTE' },
+    { value: 4, label: 'Dream Offer' },
+    { value: 5, label: 'Dream Internship' },
+    { value: 6, label: 'Dream FTE' },
+    { value: 7, label: 'Regular Offer' },
+    { value: 8, label: 'Regular Intern' },
+    { value: 9, label: 'Regular FTE' }
+    // Add more options as needed
+  ];
+  
+  function getCategoryLabel(number) {
+    const category = CategoryOptions.find(option => option.value === number);
+    return category ? category.label : 'NA';
+  }
 
   return (
     <div id="jobcard" onClick={onClick}>
@@ -49,7 +66,7 @@ const JobCards = ({ company, city, duration, ctc, startDate, status, imgPath, on
       </div>
       <div className="jobcard-category">
         {/* Assuming you want to display status as the category */}
-        <p>{status}</p>
+        <p>{getCategoryLabel(category)}</p>
       </div>
     </div>
   );

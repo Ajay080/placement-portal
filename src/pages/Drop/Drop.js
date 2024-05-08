@@ -7,6 +7,17 @@ import Background from '../../Img/Drop.jpg';
 const Drop = () => {
   const [dropData, setDropData] = useState({});
 
+  function reverseDateFormat(dateString) {
+    // Split the date string by '-'
+    const parts = dateString.split('-');
+  
+    // Rearrange the parts in reverse order
+    const reversedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+  
+    return reversedDate;
+  }
+  
+
   useEffect(() => {
     const getDropDetails = async () => {
       try {
@@ -35,9 +46,11 @@ const Drop = () => {
           <div className='section-heading'>
             <div className="drop-section-head">Today Drops</div>
           </div>
-          {Object.entries(dropData).map(([date, drops]) => (
+          {Object.entries(dropData)
+          .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA)) // Sort entries by date in descending order
+          .map(([date, drops]) => (
             <div key={date} className='capsule-container'>
-              <div className='date-header'>{date}</div>
+              <div className='date-header'>{reverseDateFormat(date)}</div>
               <div className='date-container'>
                 {drops.map(drop => (
                   <Capsule
@@ -57,25 +70,29 @@ const Drop = () => {
         {/* Starred Drops Section */}
         <div className='starred-drops-section'>
           <div className='section-heading'>Starred Drops</div>
-          {Object.entries(dropData).map(([date, drops]) => (
-            <div key={date} className='capsule-container'>
-              <div className='date-header'>{date}</div>
-              <div className='date-container'>
-                {drops.filter(drop => drop.starred).map(starredDrop => (
-                  <Capsule
-                    key={starredDrop.id}
-                    uniqueKey={starredDrop.id}
-                    time={starredDrop.time}
-                    subject={starredDrop.subject}
-                    message={starredDrop.message}
-                    starredFlag={starredDrop.starred}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
+          {Object.entries(dropData)
+            .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA)) // Sort entries by date in descending order
+            .map(([date, drops]) => (
+              drops && drops.filter(drop => drop.starred).length !== 0 && (
+                <div key={date} className='capsule-container'>
+                  <div className='date-header'>{reverseDateFormat(date)}</div>
+                  <div className='date-container'>
+                    {drops.filter(drop => drop.starred).map(starredDrop => (
+                      <Capsule
+                        key={starredDrop.id}
+                        uniqueKey={starredDrop.id}
+                        time={starredDrop.time}
+                        subject={starredDrop.subject}
+                        message={starredDrop.message}
+                        starredFlag={starredDrop.starred}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )
+            ))}
         </div>
-      </div>
+     </div>
     </div>
   );
 };

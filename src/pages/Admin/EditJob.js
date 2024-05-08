@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Select from 'react-dropdown-select';
 import './EditJob.css';
+import axios from 'axios';
 
 const JobInfoForm = ({ handleCloseJobInfoForm }) => {
   const [formData, setFormData] = useState({
@@ -9,12 +10,13 @@ const JobInfoForm = ({ handleCloseJobInfoForm }) => {
     city: '',
     duration: '',
     ctc: '',
+    cgpa:'',
     startDate:'',
     applyDeadlineDate:'',
     applyDeadlineTime:'',
     category: null,
     years: [],
-    branch: '',
+    branch: [],
     type: [],
     status: 'Upcoming', // Initial status
     imgPath: null, // For storing the selected image file
@@ -36,6 +38,27 @@ const JobInfoForm = ({ handleCloseJobInfoForm }) => {
     // Add more options as needed
   ];
 
+  const BranchOptions = [
+    { value: 'BAI', label: 'BAI' },
+    { value: 'BCG', label: 'BCG' },
+    { value: 'BCY', label: 'BCY' },
+    { value: 'BCE', label: 'BCE' }
+    // Add more options as needed
+  ];
+
+  const CategoryOptions = [
+    { value: 1, label: 'Super Dream Offer' },
+    { value: 2, label: 'Super Dream Internship' },
+    { value: 3, label: 'Super Dream FTE' },
+    { value: 4, label: 'Dream Offer' },
+    { value: 5, label: 'Dream Internship' },
+    { value: 6, label: 'Dream FTE' },
+    { value: 7, label: 'Regular Offer' },
+    { value: 8, label: 'Regular Intern' },
+    { value: 9, label: 'Regular FTE' }
+    // Add more options as needed
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevFormData => ({
@@ -44,11 +67,8 @@ const JobInfoForm = ({ handleCloseJobInfoForm }) => {
     }));
   };
 
-  const handleYearChange = (selectedYears) => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      years: selectedYears.map(year => year.value)
-    }));
+  const handleCategoryChange = (selectedOption) => {
+    setFormData({ ...formData, category: selectedOption[0].value });
   };
 
   const handleTypeChange = (selectedTypes) => {
@@ -57,27 +77,35 @@ const JobInfoForm = ({ handleCloseJobInfoForm }) => {
       type: selectedTypes.map(type => type.value)
     }));
   };
-
+  const handleBranchChange = (selectedBranch) => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      branch: selectedBranch.map(type => type.value)
+    }));
+  };
+  const handleYearChange = (selectedBranch) => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      years: selectedBranch.map(type => type.value)
+    }));
+  };
+  
+  const addJob = async () => {
+    try {
+      // Send the data
+      const url = 'http://localhost:8001/addJob';
+      const response = await axios.post(url, formData);
+      console.log("received data is", response);
+      // window.location.reload();
+  
+    } catch (error) {
+      console.log("got the error while fetching the data", error);
+    }
+  };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch('http://localhost:8001/addJob', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to submit form data');
-      }
-
-      const responseData = await response.json();
-      console.log('Form data submitted successfully:', responseData);
-    } catch (error) {
-      console.error('Error submitting form data:', error.message);
-    }
+    addJob();
     handleCloseJobInfoForm();
   };
 
@@ -107,6 +135,10 @@ const JobInfoForm = ({ handleCloseJobInfoForm }) => {
             <input type="text" id="ctc" name="ctc" value={formData.ctc} onChange={handleChange} className="job-edit-input" />
           </div>
           <div className="job-edit-form-group">
+            <label htmlFor="cgpa" className="job-edit-label">Cutoff CGPA</label>
+            <input type="number" id="cgpa" name="cgpa" value={formData.cgpa} onChange={handleChange} className="job-edit-input" />
+          </div>
+          <div className="job-edit-form-group">
             <label htmlFor="startDate" className="job-edit-label">Starting Date</label>
             <input type="date" id="startDate" name="startDate" value={formData.startDate} onChange={handleChange} className="job-edit-input" />
           </div>
@@ -120,7 +152,14 @@ const JobInfoForm = ({ handleCloseJobInfoForm }) => {
           </div>
           <div className="job-edit-form-group">
             <label htmlFor="category" className="job-edit-label">Category</label>
-            <input type="number" id="category" name="category" value={formData.category} onChange={handleChange} className="job-edit-input" />
+            {/* <input type="number" id="category" name="category" value={formData.category} onChange={handleChange} className="job-edit-input" /> */}
+            <Select
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleCategoryChange}
+              options={CategoryOptions}
+            />
           </div>
           <div className="job-edit-form-group">
             <label className="job-edit-label">Status</label>
@@ -148,12 +187,19 @@ const JobInfoForm = ({ handleCloseJobInfoForm }) => {
           </div>
           <div className="job-edit-form-group">
             <label htmlFor="branch" className="job-edit-label">Branch</label>
-            <input type="text" id="branch" name="branch" value={formData.branch} onChange={handleChange} className="job-edit-input" />
+            {/* <input type="text" id="branch" name="branch" value={formData.branch} onChange={handleChange} className="job-edit-input" /> */}
+            <Select
+              multi
+              name="branch"
+              id="branch"
+              options={BranchOptions}
+              onChange={handleBranchChange}
+              values={BranchOptions.filter(branch => formData.branch.includes(branch.value))}
+            />
           </div>
           <div className="job-edit-form-group">
             <label htmlFor="type" className="job-edit-label">Type</label>
             <Select
-              
               name="type"
               id="type"
               options={TypeOptions}

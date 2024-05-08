@@ -9,6 +9,12 @@ import profileIconBase from '../../Img/profile-icon.jpg';
 import axios from 'axios'
 
 import './Job.css'
+// import { response } from 'express';
+// import { error } from 'jquery';
+
+const JobType=['FullTime, Internship', 'Intern + FullTime']
+const CategoryType=['Dream Internship', 'Restricted Dream Internship', 'Regular Offer']
+
 
 function formatDate(dateString) {
   // Split the date string into an array containing year, month, and day
@@ -26,12 +32,7 @@ const Job = () => {
   const [jobComponent, setJobComponent] = useState([]); // Use state to store job components
   const [openDialogData, setOpenDialogData]=useState([]);
   const [allJobInteraction, setAllJobInteraction]= useState({})
-  const [filterOption, setFilterOption] = useState("all"); // Initial filter option
-  const [sortOption, setSortOption] = useState("default"); // Initial sort option
-  const [Interaction, setInteraction] = useState([]);
-  const [history, setHistory] = useState([]); // State variable for history
-  const [appliedJobCount, setAppliedJobCount]= useState(0);
-  
+
   const TypeOptions = [
     { value: 1, label: 'Full-time' },
     { value: 2, label: 'Part-time' },
@@ -53,75 +54,26 @@ const Job = () => {
     // Add more options as needed
   ];
 
-  const appliedJobCounting=()=>{
-    var count=0;
-    console.log("interaction---", Interaction)
-    for(var i=0;i<Interaction.length;i++){
-      console.log("All job interaction", Interaction[i])
-      if(Interaction[i].history[Interaction[i].history.length-1].status==true) count++;
-    }
-    console.log("count is ", count)
-    setAppliedJobCount(count)
-  }
-
-
-
-
-
-
   useEffect(() => {
     const getAllData = async () => {
       await getAllJobInteraction();
+      await fetchJobData();
       fillContainer();
+      // console.log("allJobInteraction after getAllData:", allJobInteraction);
+      // console.log("jobData after getAllData:", jobData);
     };
     getAllData();
   }, []);
 
   useEffect(() => {
     fillContainer();
-  }, [jobData, filterOption, sortOption]);
+    // console.log("jobData after fillContainer:", jobData);
+  }, [jobData]);
 
   useEffect(() => {
-    fetchJobData();
-    appliedJobCounting();
-
+    console.log("allJobInteraction updated:", allJobInteraction);
   }, [allJobInteraction]);
 
-  useEffect(() => {
-    // Generate history based on the Interaction data
-    const newHistory = Interaction
-    // Sort the interaction data based on the latest updatedAt timestamp
-    .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
-    // Iterate over each interaction item
-    .map((interactionItem) => {
-      // Get the last item from the history array
-      const lastHistoryItem = interactionItem.history[interactionItem.history.length - 1];
-      // Check if the history array is not empty
-      if (lastHistoryItem) {
-        return (
-        <div className="history_detail" style={{backgroundColor: lastHistoryItem.status ? 'green' : 'red' }} key={lastHistoryItem._id}>
-            <div className="history_head">
-              <span className="inline"><b>{interactionItem.companyName ? interactionItem.companyName : "Temp"}</b></span>
-            </div>
-            <div className='history_info'>
-              <div className='history_date'>
-                {lastHistoryItem.date} | {lastHistoryItem.time}
-              </div>
-              <div className='history_status'>
-                {lastHistoryItem.status ? 'Applied' : 'Rejected'}
-              </div>
-            </div>
-          </div>
-        );
-      } else {
-        return null; // Return null if history array is empty
-      }
-    });
-  
-  
-    setHistory(newHistory.flat()); // Update the history state with the new data
-  }, [Interaction]); // Watch for changes in the Interaction state
-  
 
   function getJobLabel(number) {
     const type = TypeOptions.find(option => option.value === number);
@@ -145,13 +97,16 @@ const Job = () => {
     try {
       const apiEndPoint = 'http://localhost:8001/getStudentJobInteraction/6608648c5c049561e85f5f1a';
       const response = await axios.get(apiEndPoint);
+      // console.log("get all job interaction", response);
       const data = response.data;
-      setInteraction(data)
   
       const updatedJobInteraction = { ...allJobInteraction };
+      // console.log("initial updateJobInteraction", updatedJobInteraction)
   
       for (var i = 0; i < data.length; i++) {
+        // console.log("data i", data[i])
         const { studentId, CompanyId, history } = data[i];
+        // console.log("student Id, companyId, history", studentId, CompanyId, history)
 
         if (!updatedJobInteraction[studentId]) {
           updatedJobInteraction[studentId] = {};
@@ -159,7 +114,9 @@ const Job = () => {
         if (!updatedJobInteraction[studentId][CompanyId]) {
           updatedJobInteraction[studentId][CompanyId] = history;
         }
-      }  
+      }
+      // console.log("updated job interaction is", updatedJobInteraction)
+  
       setAllJobInteraction(updatedJobInteraction)
             
     } catch (error) {
@@ -167,46 +124,77 @@ const Job = () => {
     }
   };
 
-  const fetchJobData = async () => {
-    try {
-      const apiEndPoint = 'http://localhost:8001/job/6608648c5c049561e85f5f1a';
-      const response = await axios.get(apiEndPoint);
-      const data = response.data.jobDetails;
-      const studentId = '6608648c5c049561e85f5f1a';
-      const currentDate = new Date();
-   
-      console.log("current job Interaction is", allJobInteraction)
-  
-      for (let i = 0; i < data.length; i++) {
-        const job = data[i];
-        const jobId = job._id;
-  
-        // Check if there is interaction data for the student and job
-        if (allJobInteraction[studentId] && allJobInteraction[studentId][jobId]) {
-          const applyDeadlineDateTime = new Date(job.applyDeadlineDate + 'T' + job.applyDeadlineTime); // Combine date and time strings into a Date object
-          const deadline = currentDate < applyDeadlineDateTime ? 'ahead' : 'behind';
-  
-          // Check if interaction history exists
-          if (allJobInteraction[studentId][jobId].length > 0) {
-            const lastInteractionStatus = allJobInteraction[studentId][jobId][allJobInteraction[studentId][jobId].length - 1].status;
-            
-            if (deadline === 'ahead' && lastInteractionStatus !== true) {
-              job.status = 'Apply';
-            } else if (lastInteractionStatus === true) {
-              job.status = 'Applied';
-            } else if (deadline === 'behind' && lastInteractionStatus !== true) {
-              job.status = 'Not Applied';
-            }
-          }
-        }
+const fetchJobData = async () => {
+  try {
+    const apiEndPoint = 'http://localhost:8001/job/6608648c5c049561e85f5f1a';
+    const response = await axios.get(apiEndPoint);
+    const data = response.data.jobDetails;
+    const studentId = '6608648c5c049561e85f5f1a';
+    const currentDate = new Date();
+    console.log("data", data)
+
+    for (let i = 0; i < data.length; i++) {
+      const job = data[i];
+      const jobId = job._id;
+      const applyDeadlineDateTime = new Date(job.applyDeadlineDate + 'T' + job.applyDeadlineTime);
+      const deadline = currentDate < applyDeadlineDateTime ? 'ahead' : 'behind';
+      console.log("current date and applied deadline date time is, deadline", currentDate, applyDeadlineDateTime, deadline)
+
+
+      console.log("job is ", job)
+
+      if (!allJobInteraction[studentId]) {
+        allJobInteraction[studentId] = {};
       }
-  
-      setJobData(data);
-    } catch (error) {
-      console.log("got the error", error);
+
+      if (!allJobInteraction[studentId][jobId]) {
+        allJobInteraction[studentId][jobId] = { history: [] };
+      }
+
+      console.log("all job interaction is", allJobInteraction, "coming job is ", job)
+      if(!allJobInteraction[studentId][jobId].history) continue;
+
+      const historyLength = allJobInteraction[studentId][jobId].history.length;
+
+      console.log("deadline ",deadline, "all job interaction", allJobInteraction )
+
+      if (
+        deadline === 'ahead' &&
+        (historyLength === 0 || allJobInteraction[studentId][jobId].history[historyLength - 1] !== true)
+      ) {
+        data[i].status = 'Apply';
+        console.log("iiiiiiiiiiiiiiiiii")
+      }
+
+      if (
+        historyLength > 0 &&
+        allJobInteraction[studentId][jobId].history[historyLength - 1] === true
+      ) {
+        data[i].status = 'Applied';
+        console.log("jjjjjjjjjjjjjjjjjjjj")
+
+      }
+
+      if (
+        deadline === 'behind' &&
+        (historyLength === 0 || allJobInteraction[studentId][jobId].history[historyLength - 1] !== true)
+      ) {
+        data[i].status = 'Not Applied';
+        console.log("pppppppppppppppppp")
+
+      }
+
+      console.log("ooooooooooooooooooooooo")
+
     }
-  };
-  
+
+
+    setJobData(data);
+    console.log("jbl data", jobData)
+  } catch (error) {
+    console.log("got the error", error);
+  }
+};
 
   
   
@@ -214,6 +202,7 @@ const Job = () => {
   const SetupDialog=()=>{
     if(!isDialogOpen) return;
     if(!openDialogData) return;
+    // console.log("set up dialog ", openDialogData)
     const currentDate= new Date();
 
 
@@ -230,20 +219,19 @@ const Job = () => {
     const status = (currentDate < applyDeadlineDateTime) ? 'ahead' : 'behind'; // Compare current date with job deadline
 
     const handleApplyClick = () => {
-      if (status === 'ahead') {
+      if (status === 'Apply') {
         const apiInteractionEndPoint='http://localhost:8001/addStudentJobInteraction';
         const sendingData={
             studentId:'6608648c5c049561e85f5f1a',
             CompanyId:openDialogData._id,
-            companyName:openDialogData.companyName,
-            status:openDialogData.status=='Applied'? false :true,
+            status:true,
             date:currentDateString,
             time:currentTimeString
         }
         axios.post(apiInteractionEndPoint, sendingData)
         .then(response => {
           // Handle success
-          console.log('Apply click response:', response.data);
+          // console.log('Apply click response:', response.data);
         })
         .catch(error => {
           // Handle error
@@ -262,7 +250,7 @@ const Job = () => {
         axios.post(apiEndPoint, sendingData)
         .then(response => {
           // Handle success
-          console.log('Apply click response:', response.data);
+          // console.log('Apply click response:', response.data);
         })
         .catch(error => {
           // Handle error
@@ -278,12 +266,9 @@ const Job = () => {
           {openDialogData.companyName}
         </div>
         <div className="dialog_status">
-          <button className="status_button" disabled={status=='behind'}   style={{ backgroundColor: status === 'ahead' ? 'green' : 'grey' }} onClick={handleApplyClick}> {(status=='ahead' && openDialogData.status=='Applied')?'Reject':openDialogData.status} </button>
+          <button className="status_button" disabled={status=='behind'}   style={{ backgroundColor: openDialogData.status === 'ahead' ? 'green' : 'grey' }} onClick={handleApplyClick}> {openDialogData.status} </button>
         </div>
       </div>
-
-
-
       <div className="dialog_photo">
         <img src={profileIconBase} alt="company_name"></img>
       </div>
@@ -324,51 +309,62 @@ const Job = () => {
     )
   }
 
-const fillContainer = () => {
-  // Copy jobData to a new variable for filtering and sorting
-  let filteredData = jobData;
-  // Filter data based on filterOption
-  if (filterOption !== "all") {
-    filteredData = filteredData.filter((job) =>
-      // Filter jobs whose category matches the selected filter option
-      job.category == filterOption
-    );
-  }
-
-  // Sort filteredData based on sortOption
-  if (sortOption === "az") {
-    filteredData.sort((a, b) => (a.companyName > b.companyName ? 1 : -1));
-  } else if (sortOption === "za") {
-    filteredData.sort((a, b) => (a.companyName < b.companyName ? 1 : -1));
-  }
-  else if (sortOption === 'da') {
-    filteredData.sort((a, b) => new Date(a.updatedAt) - new Date(b.updatedAt));
-  } else if (sortOption === 'dd') {
-    filteredData.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-  }
-
-
-  // Update jobComponent state with the filtered and sorted data
-  const updatedJobComponent = filteredData.map((job) => (
-    <JobCards
-      key={job._id}
-      company={job.companyName}
-      city={job.city}
-      duration={job.duration}
-      ctc={job.ctc}
-      startDate={job.startDate}
-      status={job.status}
-      imgPath={job.imgPath}
-      category={job.category}
-      onClick={() => handleJobCardClick(job._id)}
-    />
-  ));
+  const fillContainer = () => {
+    // console.log("fill container job data", jobData)
+    if (Array.isArray(jobData)) {
+      // const currentDate = new Date(); // Get the current date and time
+      const updatedJobComponent = jobData.map((job) => {
+        // const applyDeadlineDateTime = new Date(job.applyDeadlineDate + 'T' + job.applyDeadlineTime); // Combine date and time strings into a Date object
+        // const status = (currentDate >= applyDeadlineDateTime) ? 'passed' : 'upcoming'; // Compare current date with job deadline
+        // if(status=='passed'){
+        //   const apiInteractionEndPoint='http://localhost:8001/getStudentJobInteraction/6608648c5c049561e85f5f1a/66384f6b9ed05ae4843da8a0'
+        //   axios.get(apiInteractionEndPoint).then(response => {
+        //     // Handle success
+        //     console.log('API response:', response.data);
+        //   })
+        //   .catch(error => {
+        //     // Handle error
+        //     console.error('Error:', error);
+        //   });
+        // }
+        return (
+          <JobCards
+            key={job._id}
+            company={job.companyName}
+            city={job.city}
+            duration={job.duration}
+            ctc={job.ctc}
+            startDate={job.startDate}
+            status={job.status} // Set the status based on comparison result
+            imgPath={job.imgPath}
+            category={job.category}
+            onClick={()=>handleJobCardClick(job._id)} // Attach onClick to a clickable element within JobCards
+          />
+        );
+      });
+      setJobComponent(updatedJobComponent); // Assuming you have a state variable to store job components
+    }
+  };
   
-  setJobComponent(updatedJobComponent);
-};
-
-  
-
+  var history=[];
+  for(var i=0;i<94;i++){
+    history.push(
+      <div className="history_detail">
+        <div className="history_head">
+          {/* <FaUser className="icon" style={{ marginRight: '10px' }} /> */}
+          <span className="inline"><b>Company Name 1</b></span>
+        </div>
+        <div className='history_info'>
+          <div className='history_date'>
+            02-09-2024 | 10:00
+          </div>
+          <div className='history_status'>
+            Applied
+          </div>
+        </div>
+      </div>
+    )
+  }
   return (
     <div>
       <h3 className="job-card-head">
@@ -388,33 +384,33 @@ const fillContainer = () => {
           </div>
 
           <div className='filter-sort'>
-          {/* <select id="myjobfilter" className='sort'>
+          <select id="myjobfilter" className='sort'>
                 <option value="default">Job filter</option>
                 <option value="priceLowToHigh">My Job</option>
                 <option value="priceHighToLow">All Jobs</option>
-              </select> */}
+              </select>
               {/* <label for="sortDropdown">Sort:</label> */}
-              <select id="sortDropdown" value={sortOption} onChange={(e) => setSortOption(e.target.value)} className='sort'>
-                <option value="default">Sort</option>
-                <option value="az">A to Z</option>
-                <option value="za">Z to A</option>
-                <option value="da">Date Ascending</option>
-                <option value="dd">Date Descending</option>
+              <select id="sortDropdown" className='sort'>
+                <option value="4">Sort</option>
+                <option value="1">A to Z</option>
+                <option value="2">Z to A</option>
+                <option value="3">Date Ascending</option>
+                <option value="4">Date Descending</option>
               </select>
 
               {/* <label for="filterDropdown">Filter:</label> */}
-              <select id="filterDropdown" value={filterOption} onChange={(e) => setFilterOption(e.target.value)} className='filter'>
+              <select id="filterDropdown" className='filter'>
                 <option value="all">Filter</option>
-                {/* <option value="0">Eligible</option> */}
-                <option value="1">Super Dream Offer</option>
-                <option value="2">Super Dream Intern</option>
-                <option value="3">Super Dream FTE</option>
-                <option value="4">Dream Offer</option>
-                <option value="5">Dream Intern</option>
-                <option value="6">Dream FTE</option>
-                <option value="7">Regular Offer</option>
-                <option value="8">Regular Intern</option>
-                <option value="9">Regular FTE</option>
+                <option value="1">Eligible</option>
+                <option value="2">Super Dream Offer</option>
+                <option value="3">Super Dream Intern</option>
+                <option value="4">Super Dream FTE</option>
+                <option value="5">Dream Offer</option>
+                <option value="6">Dream Intern</option>
+                <option value="7">Dream FTE</option>
+                <option value="8">Regular Offer</option>
+                <option value="9">Regular Intern</option>
+                <option value="10">Regular FTE</option>
               </select>
             </div>
         </div>
@@ -443,20 +439,10 @@ const fillContainer = () => {
                   <span className="inline"><b>No. of job</b></span>
                 </div>
                 <div className='summary_count'>
-                  {jobData.length}
+                  342
                 </div>
               </div>
-
               <div className="summary_detail">
-                <div className="summary_head">
-                  <FaUser className="icon" style={{ marginRight: '10px' }} />
-                  <span className="inline"><b>Applied Jobs</b></span>
-                </div>
-                <div className='summary_count  waiting_detail'>
-                  {appliedJobCount}
-                </div>
-              </div>
-              {/* <div className="summary_detail">
                 <div className="summary_head">
                   <FaUser className="icon" style={{ marginRight: '10px' }} />
                   <span className="inline"><b>Placed</b></span>
@@ -464,8 +450,8 @@ const fillContainer = () => {
                 <div className='summary_count  placed_detail'>
                   0
                 </div>
-              </div> */}
-              {/* <div className="summary_detail">
+              </div>
+              <div className="summary_detail">
                 <div className="summary_head">
                   <FaUser className="icon" style={{ marginRight: '10px' }} />
                   <span className="inline"><b>Waiting</b></span>
@@ -473,8 +459,8 @@ const fillContainer = () => {
                 <div className='summary_count  waiting_detail'>
                   0
                 </div>
-              </div> */}
-              {/* <div className="summary_detail">
+              </div>
+              <div className="summary_detail">
                 <div className="summary_head">
                     <FaUser className="icon" style={{ marginRight: '10px' }} />
                     <span className="inline"><b>Rejected</b></span>
@@ -482,7 +468,7 @@ const fillContainer = () => {
                   <div className='summary_count  waiting_detail'>
                     0
                   </div>
-              </div> */}
+              </div>
             </div>
             <h3>History</h3>
 
@@ -490,11 +476,7 @@ const fillContainer = () => {
             <div className="history">
 
               
-            {Interaction.length > 0 && (
-              <div className="history">
-                {history}
-              </div>
-            )}
+              {history}
 
             </div>
           </div>
