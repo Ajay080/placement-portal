@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaLocationArrow, FaClock, FaDollarSign, FaCalendarAlt } from 'react-icons/fa';
 import './JobCards.css';
+import job from '../../Img/job.png'
 import Dp from '../../Img/LogoCrop.png';
 import IC from '../../Img/profile-icon.jpg';
 function formatDate(dateString) {
@@ -35,7 +36,7 @@ const JobCards = ({ company, city, duration, ctc, startDate, status, imgPath, ca
     <div id="jobcard" onClick={onClick}>
       <div className="jobcard-header">
         <div className="jobcard-img">
-          <img src={imgPath} alt="Company Logo"/>
+          <img src={job} alt="Company Logo"/>
         </div>
         <div className="jobcard-status">
           <button type="button">{status}</button>
@@ -51,7 +52,7 @@ const JobCards = ({ company, city, duration, ctc, startDate, status, imgPath, ca
         </div>
         <div className="jobcard-time">
           <FaClock />
-          <p>{duration}</p>
+          <p>{duration} Months</p>
         </div>
       </div>
       <div className="jobcard-details">

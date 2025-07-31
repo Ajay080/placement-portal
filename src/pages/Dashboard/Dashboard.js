@@ -1,9 +1,9 @@
 import './Dashboard.css'
 import Background from '../../Img/multi-blue.jpg'
-import Profile from '../../Img/profile-icon.jpg'
+import Profile from '../../Img/user.png'
 import React, { useEffect, useState } from 'react';
 import ResumeDownloadButton from '../../components/ResumeDownloadButton/ResumeDownloadButton'; // Importing the ResumeDownloadButton component
-import { FaFileDownload } from "react-icons/fa";
+import { FaCommentsDollar, FaFileDownload } from "react-icons/fa";
 import PasswordInput from '../../components/PasswordInput/PasswordInput'; // Importing the PasswordInput component
 import PersonalInfoForm from './PersonalInfoForm'; // Corrected import
 import AcademicInfoForm from './AcademicInfoForm';
@@ -21,6 +21,8 @@ const Dashboard = (props) => {
     const [loading, setLoading] = useState(true);
     const [selectedButton, setSelectedButton] = useState(2);
     const [password, setPassword] = useState('');
+    const [newpassword, setnewPassword] = useState('');
+    const [email, setEmail] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const pdfValue = 'Your PDF value goes here...';
 
@@ -34,6 +36,14 @@ const Dashboard = (props) => {
 
     const handlePasswordChange = (e) => {
         setPassword(e.target.value);
+    };
+
+    const handlenewPasswordChange = (e) => {
+        setnewPassword(e.target.value);
+    };
+
+    const handleEmailChange = (e) => {
+        setEmail(e.target.value);
     };
 
     const handleCheckboxChange = () => {
@@ -89,8 +99,14 @@ const Dashboard = (props) => {
     const [studentDetail, setStudentDetail] = useState(null);
     const getStudentDetails = async () => {
         try {
-            const url = 'http://localhost:8001/students/6608648c5c049561e85f5f1a';
+            const storedData = localStorage.getItem('userData');
+            if (!storedData) return;
+            var parsedData = JSON.parse(storedData);
+            console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+            var student_id=parsedData.newStudent._id;
+            const url = 'http://localhost:8001/students/'+student_id;
             const response = await axios.get(url);
+            console.log("response data is", response.data)
             setStudentDetail(response.data);
             setLoading(false);
         } catch (error) {
@@ -143,8 +159,32 @@ const Dashboard = (props) => {
 
     useEffect(() => {
         // Update HTML elements here
+        console.log("student detals is", studentDetail)
         setTimeout(() => { updateHTML() }, 1000);
     }, [studentDetail]);
+
+    const updatePassword = async () => {
+        try {
+            const storedData = localStorage.getItem('userData');
+            if (!storedData) return;
+            var parsedData = JSON.parse(storedData);
+            console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+            var student_id=parsedData.newStudent._id;
+            const url = 'http://localhost:8001/updatePassword/'+student_id;
+            const data={
+                "email":email,
+                "password":password,
+                "newpassword":newpassword
+            }
+            const response = await axios.post(url, data);
+            console.log("passwordUpdated", response.data)
+            window.location.reload();
+
+        
+        } catch (error) {
+            console.log("got the error while fetching the placement details")
+        }
+    }
 
 
     // useEffect(() => {
@@ -754,15 +794,15 @@ const Dashboard = (props) => {
                                 Resume
                             </div>
                             <div>
-                                <button className="resume-edit" onClick={handleResumeInfoEditClick}> Edit</button>
+                            <button className="resume-edit" onClick={handleResumeInfoEditClick}>Edit</button>
                             </div>
                         </div>
                         <div className='resume-name-div cap-div'>
                             <div className="resume-name-div-key cap-div-left">
                                 <b><FaFileDownload style={{ marginRight: "30px" }} />Resume</b>
                             </div>
-                            <div className="resume-name-div-value">k</div>
-                            {/* <div className="resume-name-div-value"><ResumeDownloadButton pdfValue={pdfValue} /></div>    */}
+                            {/* <div className="resume-name-div-value">Download</div> */}
+                            <div className="resume-name-div-value"><ResumeDownloadButton pdfValue={pdfValue} /></div>   
                         </div>
                     </div>
                     <div className='details-cap-card password-card' style={{ display: selectedButton === 4 ? 'block' : 'none' }}>
@@ -774,18 +814,10 @@ const Dashboard = (props) => {
                         <div className='password-name-div'>
                             <div className="password-name-div-row">
                                 <div className="password-name-div-key">
-                                    <b>Name</b>
-                                </div>
-                                <div className="password-name-div-value">
-                                    <input type="text" className="current-pass" />
-                                </div>
-                            </div>
-                            <div className="password-name-div-row">
-                                <div className="password-name-div-key">
                                     <b>Email</b>
                                 </div>
                                 <div className="password-name-div-value">
-                                    <input type="email" className="current-email" />
+                                    <input type="email" className="current-email" value={email} onChange={handleEmailChange} />
                                 </div>
                             </div>
                             <div className="password-name-div-row">
@@ -794,6 +826,14 @@ const Dashboard = (props) => {
                                 </div>
                                 <div className="password-name-div-value">
                                     <input type={showPassword ? "text" : "password"} className="current-password" value={password} onChange={handlePasswordChange} />
+                                </div>
+                            </div>
+                            <div className="password-name-div-row">
+                                <div className="password-name-div-key">
+                                    <b>Enter New Password</b>
+                                </div>
+                                <div className="password-name-div-value">
+                                    <input type={showPassword ? "text" : "password"} className="new-password" value={newpassword} onChange={handlenewPasswordChange} />
                                 </div>
                             </div>
                             <label htmlFor="showPassword">
@@ -807,7 +847,7 @@ const Dashboard = (props) => {
                                 Show Password
                             </label>
                             <div className="password-name-div-submit">
-                                <button className='password-edit'>Submit</button>
+                                <button className='password-edit' onClick={updatePassword}>Submit</button>
                             </div>
                         </div>
                     </div>

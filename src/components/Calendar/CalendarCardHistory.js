@@ -1,6 +1,6 @@
 import React from "react";
 import "./CalendarCardHistory.css"; // Import CSS file for styling
-import backgroundbg  from "../../Img/java.jpeg"
+import backgroundbg  from "../../Img/passed.png"
 import axios from 'axios'
 import { useState, useEffect } from "react";
 
@@ -38,7 +38,7 @@ const HistoryCard = ({ platform, date, time, theme,duration, joiningLink, softwa
         </div>
         <div className="calendarCardHistory-detail">
           <span className="calendarCardHistory-label">Duration:</span>
-          <span className="calendarCardHistory-value">{duration}</span>
+          <span className="calendarCardHistory-value">{duration} min</span>
         </div>
         <div className="calendarCardHistory-detail">
           <span className="calendarCardHistory-label">Software Requirement:</span>
@@ -59,12 +59,20 @@ const CalendarCardHistory = () => {
 
   const fetchHistoryData = async () => {
     try {
-      const response = await axios.get('http://localhost:8001/interviews/6608648c5c049561e85f5f1a');
+      const storedData = localStorage.getItem('userData');
+      if (!storedData) return;
+      var parsedData = JSON.parse(storedData);
+      console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+      var student_id=parsedData.newStudent._id;
+        
+      const response = await axios.get('http://localhost:8001/interviews/'+student_id);
       const filteredData = response.data.filter(interview => {
         const interviewDateTime = new Date(`${interview.date}T${interview.time}`);
-        return interviewDateTime.getTime() > getCurrentDateTime();
+        console.log("interview date time and current date time", interviewDateTime.getTime(), getCurrentDateTime())
+        return interviewDateTime.getTime() < getCurrentDateTime();
       });
       setHistoryData(filteredData);
+      console.log("filtered data is", filteredData)
       setLoading(false);
     } catch (error) {
       console.error("Error fetching drop details:", error.message);

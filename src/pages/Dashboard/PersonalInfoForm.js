@@ -21,20 +21,30 @@ const PersonalInfoForm = ({ handleClosePersonalInfoForm }) => {
   const [studentDetail, setStudentDetail] = useState(null);
   const getStudentDetails = async () => {
       try {
-          const url = 'http://localhost:8001/students/6608648c5c049561e85f5f1a';
+        const storedData = localStorage.getItem('userData');
+        if (!storedData) return;
+        var parsedData = JSON.parse(storedData);
+        console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+        var student_id=parsedData.newStudent._id;
+          const url = 'http://localhost:8001/students/'+student_id;
           const response = await axios.get(url);
           setStudentDetail(response.data);
           populateFormFields(response.data)
           setLoading(false);
           console.log("received data is", response.data);
+          
       } catch (error) {
           console.log("got the error while fetching the data", error);
       }
   };
   const updateStudentDetails = async () => {
     try {
-        
-        const url = 'http://localhost:8001/updateStudent/6608648c5c049561e85f5f1a';
+      const storedData = localStorage.getItem('userData');
+      if (!storedData) return;
+      var parsedData = JSON.parse(storedData);
+      console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+      var student_id=parsedData.newStudent._id;
+        const url = 'http://localhost:8001/updateStudent/'+student_id;
         console.log("form data is", formData.tag)
         const data={  
           "name":`${formData.name}`,
@@ -44,7 +54,7 @@ const PersonalInfoForm = ({ handleClosePersonalInfoForm }) => {
           "gender":`${formData.gender}`,
           "dob":`${formData.DoB}`,
           "tag":formData.tag
-        }
+        } 
         const response = await axios.post(url, data);
         console.log("received data is", response);
         window.location.reload();

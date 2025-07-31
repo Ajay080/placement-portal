@@ -44,8 +44,19 @@
     border-bottom-left-radius: 10px;
     object-fit: cover;
 }
-.login-current-pass{
+.login-current-pass, .set-sign-up{
     width:100%;
+    font-size: 16px;
+    color:white;
+    border-radius:5px;
+    padding-top:5px;
+    padding-bottom:5px;
+    border-color: rgb(139, 126, 212);;
+    background-color: rgb(139, 126, 212);
+}
+
+.set-sign-up{
+    margin-top:5px
 }
 .login-name-div {
     display: flex;

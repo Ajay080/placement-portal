@@ -75,7 +75,7 @@ const addDrops = async () => {
       console.group("sending data is",data)
       const response = await axios.post(url, data);
       console.log("received data is", response);
-      // window.location.reload();
+      window.location.reload();
 
   } catch (error) {
       console.log("got the error while fetching the data", error);

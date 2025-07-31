@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "./CalendarCard.css"; // Import CSS file for styling
-import backgroundbg from "../../Img/django.jpeg"
-import axios from 'axios'
+import backgroundbg from "../../Img/upcoming.jpg";
+import axios from 'axios';
 
 
 const addHttp = (url) => {
@@ -38,7 +38,7 @@ const Card = ({ platform, date, time, theme,duration, joiningLink, softwareRequi
         </div>
         <div className="calendarCard-detail">
           <span className="calendarCard-label">Duration:</span>
-          <span className="calendarCard-value">{duration}</span>
+          <span className="calendarCard-value">{duration} min</span>
         </div>
         <div className="calendarCard-detail">
           <span className="calendarCard-label">Software Requirement:</span>
@@ -60,7 +60,13 @@ const CalendarCard = () => {
 
   const getCalendarData = async () => {
     try {
-      const response = await axios.get('http://localhost:8001/interviews/6608648c5c049561e85f5f1a');
+      const storedData = localStorage.getItem('userData');
+      if (!storedData) return;
+      var parsedData = JSON.parse(storedData);
+      console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+      var student_id=parsedData.newStudent._id;
+        
+      const response = await axios.get('http://localhost:8001/interviews/'+student_id);
       const filteredData = response.data.filter(interview => {
         const interviewDateTime = new Date(`${interview.date}T${interview.time}`);
         return interviewDateTime.getTime() > getCurrentDateTime();

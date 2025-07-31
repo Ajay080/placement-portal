@@ -25,6 +25,7 @@ function App() {
 }
 
 function WithNavbarRoutes() {
+
   return (
     <>
       <Navbar />

@@ -96,7 +96,7 @@ const JobInfoForm = ({ handleCloseJobInfoForm }) => {
       const url = 'http://localhost:8001/addJob';
       const response = await axios.post(url, formData);
       console.log("received data is", response);
-      // window.location.reload();
+      window.location.reload();
   
     } catch (error) {
       console.log("got the error while fetching the data", error);

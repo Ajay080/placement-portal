@@ -5,7 +5,9 @@ import { FaMapMarkerAlt } from 'react-icons/fa';
 import { FaClock } from 'react-icons/fa';
 import { FaDollarSign } from 'react-icons/fa';
 import { FaHourglassHalf } from 'react-icons/fa';
-import profileIconBase from '../../Img/profile-icon.jpg';
+// import profileIconBase from '../../Img/profile-icon.jpg';
+import profileIconBase from '../../Img/job.png'
+
 import axios from 'axios'
 
 import './Job.css'
@@ -52,7 +54,6 @@ const Job = () => {
     { value: 9, label: 'Regular FTE' }
     // Add more options as needed
   ];
-
   const appliedJobCounting=()=>{
     var count=0;
     console.log("interaction---", Interaction)
@@ -63,12 +64,6 @@ const Job = () => {
     console.log("count is ", count)
     setAppliedJobCount(count)
   }
-
-
-
-
-
-
   useEffect(() => {
     const getAllData = async () => {
       await getAllJobInteraction();
@@ -84,7 +79,6 @@ const Job = () => {
   useEffect(() => {
     fetchJobData();
     appliedJobCounting();
-
   }, [allJobInteraction]);
 
   useEffect(() => {
@@ -143,7 +137,12 @@ const Job = () => {
 
   const getAllJobInteraction = async () => {
     try {
-      const apiEndPoint = 'http://localhost:8001/getStudentJobInteraction/6608648c5c049561e85f5f1a';
+      const storedData = localStorage.getItem('userData');
+      if (!storedData) return;
+      var parsedData = JSON.parse(storedData);
+      console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+      var student_id=parsedData.newStudent._id;
+      const apiEndPoint = 'http://localhost:8001/getStudentJobInteraction/'+student_id;
       const response = await axios.get(apiEndPoint);
       const data = response.data;
       setInteraction(data)
@@ -169,13 +168,19 @@ const Job = () => {
 
   const fetchJobData = async () => {
     try {
-      const apiEndPoint = 'http://localhost:8001/job/6608648c5c049561e85f5f1a';
+      const storedData = localStorage.getItem('userData');
+      if (!storedData) return;
+      var parsedData = JSON.parse(storedData);
+      console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+      var student_id=parsedData.newStudent._id;
+      const apiEndPoint = 'http://localhost:8001/job/'+student_id;
       const response = await axios.get(apiEndPoint);
       const data = response.data.jobDetails;
-      const studentId = '6608648c5c049561e85f5f1a';
+      const studentId = student_id;
       const currentDate = new Date();
    
       console.log("current job Interaction is", allJobInteraction)
+      console.log("---------data is", data)
   
       for (let i = 0; i < data.length; i++) {
         const job = data[i];
@@ -189,14 +194,28 @@ const Job = () => {
           // Check if interaction history exists
           if (allJobInteraction[studentId][jobId].length > 0) {
             const lastInteractionStatus = allJobInteraction[studentId][jobId][allJobInteraction[studentId][jobId].length - 1].status;
-            
             if (deadline === 'ahead' && lastInteractionStatus !== true) {
               job.status = 'Apply';
             } else if (lastInteractionStatus === true) {
               job.status = 'Applied';
-            } else if (deadline === 'behind' && lastInteractionStatus !== true) {
+            } else if (deadline == 'behind' && lastInteractionStatus !== true) {
               job.status = 'Not Applied';
             }
+            else if(deadline=="behind"){
+              job.status='Not Applied'
+            }
+            console.log("job , deadline", job, deadline, lastInteractionStatus)
+
+          }
+        }
+        else{
+          const applyDeadlineDateTime = new Date(job.applyDeadlineDate + 'T' + job.applyDeadlineTime); // Combine date and time strings into a Date object
+          const deadline = currentDate < applyDeadlineDateTime ? 'ahead' : 'behind';
+          if(deadline=='ahead'){
+            job.status='Apply'
+          }
+          else{
+            job.status='Not Applied'
           }
         }
       }
@@ -231,9 +250,14 @@ const Job = () => {
 
     const handleApplyClick = () => {
       if (status === 'ahead') {
+        const storedData = localStorage.getItem('userData');
+        if (!storedData) return; 
+        var parsedData = JSON.parse(storedData);
+        console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+        var student_id=parsedData.newStudent._id;
         const apiInteractionEndPoint='http://localhost:8001/addStudentJobInteraction';
         const sendingData={
-            studentId:'6608648c5c049561e85f5f1a',
+            studentId: student_id,
             CompanyId:openDialogData._id,
             companyName:openDialogData.companyName,
             status:openDialogData.status=='Applied'? false :true,
@@ -244,6 +268,8 @@ const Job = () => {
         .then(response => {
           // Handle success
           console.log('Apply click response:', response.data);
+          window.location.reload();
+
         })
         .catch(error => {
           // Handle error
@@ -251,9 +277,14 @@ const Job = () => {
         });
       }
       else {
+        const storedData = localStorage.getItem('userData');
+        if (!storedData) return;
+        var parsedData = JSON.parse(storedData);
+        console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+        var student_id=parsedData.newStudent._id;
         const apiEndPoint = 'http://localhost:8001/addStudentJobInteraction';
         const sendingData={
-          studentId:'6608648c5c049561e85f5f1a',
+          studentId:student_id,
           CompanyId:openDialogData._id,
           status:false,
           date:currentDateString,
@@ -263,6 +294,8 @@ const Job = () => {
         .then(response => {
           // Handle success
           console.log('Apply click response:', response.data);
+          window.location.reload();
+
         })
         .catch(error => {
           // Handle error
@@ -347,7 +380,7 @@ const fillContainer = () => {
     filteredData.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
   }
 
-
+  console.log("filterd data is", filteredData)
   // Update jobComponent state with the filtered and sorted data
   const updatedJobComponent = filteredData.map((job) => (
     <JobCards

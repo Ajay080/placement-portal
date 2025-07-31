@@ -16,8 +16,13 @@ const Capsule = ({ uniqueKey, time, subject, message, starredFlag }) => {
 
   const toggle = async (direction) => {
     try {
+      const storedData = localStorage.getItem('userData');
+      if (!storedData) return;
+      var parsedData = JSON.parse(storedData);
+      console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+      var student_id=parsedData.newStudent._id;
         
-        const url = 'http://localhost:8001/addStarred/66085f82e981bc3341d4f415';
+        const url = 'http://localhost:8001/addStarred/'+student_id;
 
         const data = {
             "message_id": uniqueKey,

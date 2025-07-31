@@ -21,11 +21,18 @@ const Calendar = (props) => {
     e.preventDefault();
     try {
       const data=formData;
+      const storedData = localStorage.getItem('userData');
+      if (!storedData) return;
+      var parsedData = JSON.parse(storedData);
+      console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+      var student_id=parsedData.newStudent._id;
+        
+      
       const url = 'http://localhost:8001/addInterviewAsk';
-      data.student_id='6608648c5c049561e85f5f1a';
+      data.student_id=student_id;
       const currentDate= new Date();
       data.currentTime = currentDate.toTimeString().split(' ')[0]; // Extracting time from the date
-      data.currentDate = currentDate.toDateString(); // Formatting current date
+      data.currentDate = currentDate.toLocaleDateString(); // Format date as YYYY-MM-DD
   
 
       const response = await axios.post(url, data);
@@ -38,6 +45,8 @@ const Calendar = (props) => {
         potentialDuration:"",
         targetCompany: ""
       });
+      window.location.reload();
+
     } catch (error) {
       console.error("Error sending form data:", error);
     }

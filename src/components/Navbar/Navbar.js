@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { GiHamburger } from "react-icons/gi";
 import { GiHamburgerMenu } from "react-icons/gi";
 import BrandName from '../BrandName/BrandName';
-import ProfileIcon from '../../Img/profile-icon.jpg'
+import ProfileIcon from '../../Img/user.png'
 
 const Navbar = () => {
   const [showPages, setShowPages] = useState(false);
@@ -23,6 +23,22 @@ const Navbar = () => {
     setActiveButton(page);
   };
 
+  const storedData = localStorage.getItem('userData');
+  if (!storedData) return;
+  var parsedData = JSON.parse(storedData);
+  console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+  var student_role='';
+  if (!parsedData) {
+    student_role = 'admin';
+  } else {
+    if (!parsedData.newStudent || !parsedData.newStudent.role) {
+      student_role = 'admin';
+    } else {
+      student_role = parsedData.newStudent.role;
+    }
+  }
+  
+
   return (
     <nav className="navbar">
       <div className="brand"><BrandName /></div>
@@ -33,8 +49,11 @@ const Navbar = () => {
           <li className={activeButton === 'job' ? 'active' : ''} onClick={() => handleButtonClick('job')}><Link to="job">JobBoard</Link></li>
           <li className={activeButton === 'calendar' ? 'active' : ''} onClick={() => handleButtonClick('calendar')}><Link to="calendar">Interviews</Link></li>
           <li className={activeButton === 'about' ? 'active' : ''} onClick={() => handleButtonClick('about')}><Link to="about">About us</Link></li>
-          <li className={activeButton === 'admin' ? 'active' : ''} onClick={() => handleButtonClick('admin')}><Link to="admin">Admin</Link></li>
-          <li className="LogoutNav"><Link to="/">Logout</Link></li>
+          {student_role !== 'student' && (
+          <li className={activeButton === 'admin' ? 'active' : ''} onClick={() => handleButtonClick('admin')}>
+            <Link to="/admin">Admin</Link>
+          </li>)}          
+        <li className="LogoutNav"><Link to="/">Logout</Link></li>
         </ul>
         <div className="profile-option profile-icon" onClick={toggleDropDown}>
           <img className="profile-pic" src={ProfileIcon}></img>

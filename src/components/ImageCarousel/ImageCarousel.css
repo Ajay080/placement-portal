@@ -47,10 +47,12 @@
   }
   
   .card-image {
-    width: 100%;
-    height: auto;
+    width: 150px; /* Set the width of the image */
+    height: 200px; /* Set the height of the image */
+    object-fit: cover; /* Maintain aspect ratio and cover the entire space */
     border-radius: 10px;
   }
+  
   
   .card-text {
     padding: 10px;

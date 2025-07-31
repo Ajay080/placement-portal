@@ -6,14 +6,13 @@ import Background from '../../Img/Drop.jpg';
 
 const Drop = () => {
   const [dropData, setDropData] = useState({});
-
   function reverseDateFormat(dateString) {
     // Split the date string by '-'
     const parts = dateString.split('-');
-  
-    // Rearrange the parts in reverse order
-    const reversedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-  
+    
+    // Rearrange the parts in the desired order
+    const reversedDate = `${parts[1]}-${parts[2]}-${parts[0]}`;
+    
     return reversedDate;
   }
   
@@ -21,7 +20,13 @@ const Drop = () => {
   useEffect(() => {
     const getDropDetails = async () => {
       try {
-        const response = await axios.get('http://localhost:8001/getDropByDate/66085f82e981bc3341d4f415');
+        // Retrieving data from local storage
+        const storedData = localStorage.getItem('userData');
+        if (!storedData) return;
+        var parsedData = JSON.parse(storedData);
+        console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
+        var student_id=parsedData.newStudent._id;
+        const response = await axios.get('http://localhost:8001/getDropByDate/'+student_id);
         setDropData(response.data);
         console.log("response data is", response.data)
       } catch (error) {
