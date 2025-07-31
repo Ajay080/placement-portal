@@ -5,7 +5,7 @@ const BrandName = () => {
   return (
     <div className="BrandName">
         <img className="BrandLogo" src={LogoCrop}/>
-        <p className="BrandName">PlacementPortal</p>
+        <p className="BrandName">Career Development Portal</p>
     </div>
   )
 }
