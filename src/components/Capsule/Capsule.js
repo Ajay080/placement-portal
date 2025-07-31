@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Capsule.css';
 import axios from 'axios';
 import { BsStar, BsStarFill } from 'react-icons/bs';
+import { buildApiUrl } from '../../utils/config';
 const Capsule = ({ uniqueKey, time, subject, message, starredFlag }) => {
   const [alertOpen, setAlertOpen] = useState(false);
   const [starred, setStarred] = useState(starredFlag);
@@ -22,7 +23,7 @@ const Capsule = ({ uniqueKey, time, subject, message, starredFlag }) => {
       console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
       var student_id=parsedData.newStudent._id;
         
-        const url = 'http://localhost:8001/addStarred/'+student_id;
+        const url = buildApiUrl(`addStarred/${student_id}`);
 
         const data = {
             "message_id": uniqueKey,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-dropdown-select';
 import './EditJob.css';
+import { buildApiUrl } from '../../utils/config';
 
 const JobInfoForm = ({ handleCloseJobInfoForm }) => {
   const [formData, setFormData] = useState({
@@ -67,7 +68,7 @@ const JobInfoForm = ({ handleCloseJobInfoForm }) => {
 
   const sendFormDataToAPI = async (formData) => {
     try {
-      const response = await fetch('http://localhost:8001/addJob', {
+      const response = await fetch(buildApiUrl('addJob'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

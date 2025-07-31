@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import "./CalendarCard.css"; // Import CSS file for styling
 import backgroundbg from "../../Img/upcoming.jpg";
 import axios from 'axios';
+import { buildApiUrl } from '../../utils/config';
 
 
 const addHttp = (url) => {
@@ -66,7 +67,7 @@ const CalendarCard = () => {
       console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
       var student_id=parsedData.newStudent._id;
         
-      const response = await axios.get('http://localhost:8001/interviews/'+student_id);
+      const response = await axios.get(buildApiUrl(`interviews/${student_id}`));
       const filteredData = response.data.filter(interview => {
         const interviewDateTime = new Date(`${interview.date}T${interview.time}`);
         return interviewDateTime.getTime() > getCurrentDateTime();

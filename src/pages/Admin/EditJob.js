@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Select from 'react-dropdown-select';
 import './EditJob.css';
 import axios from 'axios';
+import { buildApiUrl } from '../../utils/config';
 
 const JobInfoForm = ({ handleCloseJobInfoForm }) => {
   const [formData, setFormData] = useState({
@@ -93,7 +94,7 @@ const JobInfoForm = ({ handleCloseJobInfoForm }) => {
   const addJob = async () => {
     try {
       // Send the data
-      const url = 'http://localhost:8001/addJob';
+      const url = buildApiUrl('addJob');
       const response = await axios.post(url, formData);
       console.log("received data is", response);
       window.location.reload();

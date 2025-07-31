@@ -3,6 +3,7 @@ import axios from "axios";
 import './Calendar.css';
 import CalendarCard from "../../components/Calendar/CalendarCard";
 import CalendarCardHistory from "../../components/Calendar/CalendarCardHistory";
+import { buildApiUrl } from '../../utils/config';
 
 const Calendar = (props) => {
   const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ const Calendar = (props) => {
       var student_id=parsedData.newStudent._id;
         
       
-      const url = 'http://localhost:8001/addInterviewAsk';
+      const url = buildApiUrl('addInterviewAsk');
       data.student_id=student_id;
       const currentDate= new Date();
       data.currentTime = currentDate.toTimeString().split(' ')[0]; // Extracting time from the date

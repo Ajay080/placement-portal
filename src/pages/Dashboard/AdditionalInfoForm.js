@@ -3,6 +3,7 @@ import './AdditionalInfoForm.css';
 import { BsStar, BsStarFill } from 'react-icons/bs';
 import axios from 'axios';
 import Select from 'react-dropdown-select';
+import { buildApiUrl } from '../../utils/config';
 
 
 const AdditionalInfoForm = ({ handleCloseAdditionalInfoForm }) => {
@@ -34,7 +35,7 @@ const AdditionalInfoForm = ({ handleCloseAdditionalInfoForm }) => {
       var parsedData = JSON.parse(storedData);
       console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
       var student_id=parsedData.newStudent._id;
-        const url = 'http://localhost:8001/students/'+student_id;
+        const url = buildApiUrl(`students/${student_id}`);
         const response = await axios.get(url);
         setStudentDetail(response.data);
         populateFormFields(response.data)
@@ -53,7 +54,7 @@ const updateStudentDetails = async () => {
     console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
     var student_id=parsedData.newStudent._id;
       
-      const url = 'http://localhost:8001/updateStudent/'+student_id;
+      const url = buildApiUrl(`updateStudent/${student_id}`);
       console.log("form data is", formData.tag)
       const data={  
         "name":`${formData.name}`,

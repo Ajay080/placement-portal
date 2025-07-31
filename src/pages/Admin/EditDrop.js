@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './EditDrop.css';
 import axios from 'axios';
 import Select from 'react-dropdown-select';
+import { buildApiUrl } from '../../utils/config';
 
 const DropInfoForm = ({ handleCloseDropInfoForm }) => {
   const [formData, setFormData] = useState({
@@ -42,7 +43,7 @@ const DropInfoForm = ({ handleCloseDropInfoForm }) => {
 const addDrops = async () => {
   try {
       
-      const url = 'http://localhost:8001/addDrop';
+      const url = buildApiUrl('addDrop');
       console.log("form data is", formData.tag)
       const currentDate = new Date();
 

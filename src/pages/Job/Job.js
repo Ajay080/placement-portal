@@ -9,6 +9,7 @@ import { FaHourglassHalf } from 'react-icons/fa';
 import profileIconBase from '../../Img/job.png'
 
 import axios from 'axios'
+import { buildApiUrl } from '../../utils/config'
 
 import './Job.css'
 
@@ -142,7 +143,7 @@ const Job = () => {
       var parsedData = JSON.parse(storedData);
       console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
       var student_id=parsedData.newStudent._id;
-      const apiEndPoint = 'http://localhost:8001/getStudentJobInteraction/'+student_id;
+      const apiEndPoint = buildApiUrl(`getStudentJobInteraction/${student_id}`);
       const response = await axios.get(apiEndPoint);
       const data = response.data;
       setInteraction(data)
@@ -173,7 +174,7 @@ const Job = () => {
       var parsedData = JSON.parse(storedData);
       console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
       var student_id=parsedData.newStudent._id;
-      const apiEndPoint = 'http://localhost:8001/job/'+student_id;
+      const apiEndPoint = buildApiUrl(`job/${student_id}`);
       const response = await axios.get(apiEndPoint);
       const data = response.data.jobDetails;
       const studentId = student_id;
@@ -255,7 +256,7 @@ const Job = () => {
         var parsedData = JSON.parse(storedData);
         console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
         var student_id=parsedData.newStudent._id;
-        const apiInteractionEndPoint='http://localhost:8001/addStudentJobInteraction';
+        const apiInteractionEndPoint=buildApiUrl('addStudentJobInteraction');
         const sendingData={
             studentId: student_id,
             CompanyId:openDialogData._id,
@@ -282,7 +283,7 @@ const Job = () => {
         var parsedData = JSON.parse(storedData);
         console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
         var student_id=parsedData.newStudent._id;
-        const apiEndPoint = 'http://localhost:8001/addStudentJobInteraction';
+        const apiEndPoint = buildApiUrl('addStudentJobInteraction');
         const sendingData={
           studentId:student_id,
           CompanyId:openDialogData._id,

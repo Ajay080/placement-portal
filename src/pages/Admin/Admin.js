@@ -9,6 +9,7 @@ import EditInterview from './EditInterview'
 import EditDrop from './EditDrop'
 import axios from 'axios';
 import ResumeDownloadButton from '../../components/ResumeDownloadButton/ResumeDownloadButton'; // Importing the ResumeDownloadButton component
+import { buildApiUrl } from '../../utils/config';
 
 
 const Admin = () => {
@@ -40,7 +41,7 @@ const Admin = () => {
 
     const getStudentDetails = async () => {
         try {
-            const response = await axios.get('http://localhost:8001/getAllStudents');
+            const response = await axios.get(buildApiUrl('getAllStudents'));
             setStudentData(response.data);
             console.log("response data is", response.data);
     
@@ -67,7 +68,7 @@ const Admin = () => {
     
     const getJobs = async () => {
         try {
-            const response = await axios.get('http://localhost:8001/jobs');
+            const response = await axios.get(buildApiUrl('jobs'));
             // setJobData(response.data);
             console.log("response data is---------", response.data);
     
@@ -95,7 +96,7 @@ const Admin = () => {
 
     const getDropDetails = async () => {
         try {
-            const response = await axios.get('http://localhost:8001/drops');
+            const response = await axios.get(buildApiUrl('drops'));
             console.log("response data is", response.data);
     
             const formattedData = response.data.map((drop, index) => ({
@@ -115,7 +116,7 @@ const Admin = () => {
 
     const getInterviewsDetails = async () => {
         try {
-            const response = await axios.get('http://localhost:8001/Interviews');
+            const response = await axios.get(buildApiUrl('Interviews'));
             console.log("response data is", response.data);
             const formattedData = response.data.map((interview) => ({
                 id: interview._id,
@@ -141,7 +142,7 @@ const Admin = () => {
 
     const getrequestDetails = async () => {
         try {
-            const response = await axios.get('http://localhost:8001/InterviewAsks');
+            const response = await axios.get(buildApiUrl('InterviewAsks'));
             console.log("response data is---------", response.data);
     
             const formattedData = response.data.map((item, index) => ({
@@ -173,7 +174,7 @@ const Admin = () => {
             console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
             var student_id=parsedData.newStudent._id;
               
-            const response=await axios.delete('http://localhost:8001/Deletedrops/'+drop_id);
+            const response=await axios.delete(buildApiUrl(`Deletedrops/${drop_id}`));
             window.location.reload();
 
         }
@@ -188,7 +189,7 @@ const Admin = () => {
                 // console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
                 // var student_id=parsedData.newStudent._id;
                   
-                const response=await axios.delete('http://localhost:8001/DeleteInterview/'+drop_id);
+                const response=await axios.delete(buildApiUrl(`DeleteInterview/${drop_id}`));
                 window.location.reload();
 
             }
@@ -202,7 +203,7 @@ const Admin = () => {
                     // console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
                     // var student_id=parsedData.newStudent._id;
                       
-                    const response=await axios.delete('http://localhost:8001/DeleteJob/'+job_id);
+                    const response=await axios.delete(buildApiUrl(`DeleteJob/${job_id}`));
                     window.location.reload();
 
                 }

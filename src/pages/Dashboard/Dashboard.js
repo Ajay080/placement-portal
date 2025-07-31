@@ -15,6 +15,7 @@ import ReactDOMServer from 'react-dom/server';
 
 
 import axios from 'axios';
+import { buildApiUrl } from '../../utils/config';
 
 
 const Dashboard = (props) => {
@@ -104,7 +105,7 @@ const Dashboard = (props) => {
             var parsedData = JSON.parse(storedData);
             console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
             var student_id=parsedData.newStudent._id;
-            const url = 'http://localhost:8001/students/'+student_id;
+            const url = buildApiUrl(`students/${student_id}`);
             const response = await axios.get(url);
             console.log("response data is", response.data)
             setStudentDetail(response.data);
@@ -119,7 +120,7 @@ const Dashboard = (props) => {
     const getPlacementDetails = async () => {
         try {
             setLoading(true);
-            const url = 'http://localhost:8001/placementRules';
+            const url = buildApiUrl('placementRules');
             const response = await axios.get(url);
             setPlacementRule(response.data);
             setLoading(false);
@@ -170,7 +171,7 @@ const Dashboard = (props) => {
             var parsedData = JSON.parse(storedData);
             console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
             var student_id=parsedData.newStudent._id;
-            const url = 'http://localhost:8001/updatePassword/'+student_id;
+            const url = buildApiUrl(`updatePassword/${student_id}`);
             const data={
                 "email":email,
                 "password":password,

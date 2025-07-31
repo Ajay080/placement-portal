@@ -3,6 +3,7 @@ import axios from 'axios';
 import './Drop.css';
 import Capsule from '../../components/Capsule/Capsule';
 import Background from '../../Img/Drop.jpg';
+import { buildApiUrl } from '../../utils/config';
 
 const Drop = () => {
   const [dropData, setDropData] = useState({});
@@ -26,7 +27,7 @@ const Drop = () => {
         var parsedData = JSON.parse(storedData);
         console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
         var student_id=parsedData.newStudent._id;
-        const response = await axios.get('http://localhost:8001/getDropByDate/'+student_id);
+        const response = await axios.get(buildApiUrl(`getDropByDate/${student_id}`));
         setDropData(response.data);
         console.log("response data is", response.data)
       } catch (error) {

@@ -3,6 +3,7 @@ import './Login.css'
 import axios from 'axios';
 import Background from '../../Img/LoginBg.jpg'
 import { Link, useNavigate } from 'react-router-dom';
+import { buildApiUrl } from '../../utils/config';
 // import AuthProvider, { AuthContext } from '../../AuthProvider';
 
 
@@ -80,7 +81,7 @@ const Login = () => {
         // Determine API endpoint and data based on signup/login and role
         if (SignUpL) { // Signup
             if (role === 'student') {
-                apiEndPoint = 'http://localhost:8001/addStudent';
+                apiEndPoint = buildApiUrl('addStudent');
                 data = {
                     name: name,
                     email: email,
@@ -90,7 +91,7 @@ const Login = () => {
                     phoneNumber: phoneNumber
                 };
             } else if (role === 'user' || role === 'admin') {
-                apiEndPoint = 'http://localhost:8001/users/signup';
+                apiEndPoint = buildApiUrl('users/signup');
                 data = {
                     name: name,
                     email: email,
@@ -100,13 +101,13 @@ const Login = () => {
             }
         } else { // Login
             if (role === 'student') {
-                apiEndPoint = 'http://localhost:8001/students/login';
+                apiEndPoint = buildApiUrl('students/login');
                 data = {
                     email: email,
                     password: password
                 };
             } else if (role === 'user' || role === 'admin') {
-                apiEndPoint = 'http://localhost:8001/users/login';
+                apiEndPoint = buildApiUrl('users/login');
                 data = {
                     email: email,
                     password: password

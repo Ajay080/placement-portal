@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './EditInterview.css';
 import axios from 'axios';
+import { buildApiUrl } from '../../utils/config';
 
 const InterviewInfoForm = ({ handleCloseInterviewInfoForm }) => {
   const [formData, setFormData] = useState({
@@ -35,7 +36,7 @@ const InterviewInfoForm = ({ handleCloseInterviewInfoForm }) => {
   const addInterview = async () => {
     try {
         
-        const url = 'http://localhost:8001/addInterview';
+        const url = buildApiUrl('addInterview');
   
         // const data = {
         //   "subject": formData.subject,
