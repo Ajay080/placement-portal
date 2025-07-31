@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './Admin.css';
 import $ from 'jquery';
 import 'datatables.net'; // Import DataTables library
+import 'datatables.net-dt/css/dataTables.dataTables.css'; // Import DataTables CSS
 import EditStudentDetails from './EditStudentDetails';
 import EditPlacementDetails from './EditPlacementDetails'
 import EditJob from './EditJob'

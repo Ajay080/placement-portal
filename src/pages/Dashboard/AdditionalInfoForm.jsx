@@ -68,7 +68,6 @@ const updateStudentDetails = async () => {
         "type":formData.type,
         "tenthMarks":formData.tenthMarks,
         "twelfthMarks":formData.twelfthMarks,
-        "year":formData.year,
         "branch":formData.branch,
         "cgpa":formData.cgpa,
         "age":formData.age,
