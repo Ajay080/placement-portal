@@ -1,145 +1,126 @@
 import React, { useState, useEffect } from 'react';
-import './AdditionalInfoForm.css';
-import { BsStar, BsStarFill } from 'react-icons/bs';
+import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '../../components/ui/dialog';
+import { toast } from 'react-toastify';
 import axios from 'axios';
-import Select from 'react-dropdown-select';
 import { buildApiUrl } from '../../utils/config';
 
 
-const AdditionalInfoForm = ({ handleCloseAdditionalInfoForm }) => {
-  const [alertOpen, setAlertOpen] = useState(true);
+const AdditionalInfoForm = ({ handleCloseAdditionalInfoForm, onDataUpdate, alertOpen, setAlertOpen }) => {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
   const [formData, setFormData] = useState({
-    name: '',
-    regNo: '',
-    email: '',
-    phone: '',
-    gender:'',
-    DoB:'',
-    tag:'',
     age: '',
-    status: '',
-    cgpa: '',
-    tenthMarks: '',
-    twelfthMarks: '',
-    year: '',
-    type: [],
-    branch: '',
-    placed:''
+    status: true,
+    type: ''
   });
+
   const [studentDetail, setStudentDetail] = useState(null);
 
   const getStudentDetails = async () => {
     try {
       const storedData = localStorage.getItem('userData');
-      if (!storedData) return;
-      var parsedData = JSON.parse(storedData);
-      console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
-      var student_id=parsedData.newStudent._id;
-        const url = buildApiUrl(`students/${student_id}`);
-        const response = await axios.get(url);
-        setStudentDetail(response.data);
-        populateFormFields(response.data)
-        // setLoading(false);
-        console.log("received data is", response.data);
+      if (!storedData) {
+        toast.error('No user data found');
+        return;
+      }
+      
+      const parsedData = JSON.parse(storedData);
+      console.log("stored json data is",parsedData);
+      const student_id = parsedData.student?._id || parsedData.newStudent?._id || parsedData.user?._id || parsedData._id;
+      
+      if (!student_id) {
+        toast.error('Invalid user data');
+        return;
+      }
+
+      const url = buildApiUrl(`students/${student_id}`);
+      const response = await axios.get(url);
+      setStudentDetail(response.data);
+      populateFormFields(response.data);
+      setLoading(false);
+      console.log("received data is", response.data);
     } catch (error) {
         console.log("got the error while fetching the data", error);
+        toast.error('Failed to load student details');
+        setLoading(false);
     }
-};
+  };
 
-const updateStudentDetails = async () => {
-  try {
-    const storedData = localStorage.getItem('userData');
-    if (!storedData) return;
-    var parsedData = JSON.parse(storedData);
-    console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
-    var student_id=parsedData.newStudent._id;
+  const updateStudentDetails = async () => {
+    try {
+      setSaving(true);
+      const storedData = localStorage.getItem('userData');
+      if (!storedData) return;
       
+      const parsedData = JSON.parse(storedData);
+      console.log("stored json data is",parsedData);
+      const student_id = parsedData.student?._id || parsedData.newStudent?._id || parsedData.user?._id || parsedData._id;
+        
       const url = buildApiUrl(`updateStudent/${student_id}`);
-      console.log("form data is", formData.tag)
-      const data={  
-        "name":`${formData.name}`,
-        "registrationNumber":`${formData.regNo}`,
-        "email":formData.email,
-        "phoneNumber":`${formData.phone}`,
-        "gender":`${formData.gender}`,
-        "dob":`${formData.DoB}`,
-        "tag":formData.tag,
-        "year":formData.year,
-        "type":formData.type,
-        "tenthMarks":formData.tenthMarks,
-        "twelfthMarks":formData.twelfthMarks,
-        "branch":formData.branch,
-        "cgpa":formData.cgpa,
-        "age":formData.age,
+      
+      // Convert type string to array of numbers if needed
+      let typeValue;
+      if (formData.type) {
+        const typeMap = {
+          'Regular': [1],
+          'Lateral Entry': [2], 
+          'Transfer': [3],
+          'International': [4]
+        };
+        typeValue = typeMap[formData.type] || [formData.type];
+      } else {
+        typeValue = [];
       }
+      
+      const data = {  
+        "age": parseInt(formData.age) || undefined,
+        "status": formData.status,
+        "type": typeValue
+      };
+      
       const response = await axios.post(url, data);
       console.log("received data is", response);
-      window.location.reload();
+      toast.success('Additional information updated successfully!');
+      onDataUpdate?.();
+      setAlertOpen(false);
+      setSaving(false);
+    } catch (error) {
+        console.log("got the error while updating the data", error);
+        toast.error('Failed to update additional information');
+        setSaving(false);
+    }
+  };
 
-  } catch (error) {
-      console.log("got the error while fetching the data", error);
-  }
-};
-
-const handleTypeChange = (selectedTypes) => {
-  setFormData(prevFormData => ({
-    ...prevFormData,
-    type: selectedTypes.map(type => type.value)
-  }));
-};
-
-const populateFormFields = (data) => {
-  setFormData(prevFormData => ({
-    ...prevFormData,
-    name: data.name,
-    regNo: data.registrationNumber,
-    age: data.age.toString(),
-    email: data.email,
-    phone: data.phoneNumber,
-    DoB: new Date(data.dob).toISOString().split('T')[0],
-    cgpa:data.cgpa,
-    tenthMarks:data.tenthMarks,
-    twelfthMarks:data.twelfthMarks,
-    // "type": data.type.map(type => {
-    //   // Map string values to their corresponding numeric values
-    //   switch (type) {
-    //     case 'Full-time':
-    //       return 1;
-    //     case 'Part-time':
-    //       return 2;
-    //     case 'Internship':
-    //       return 3;
-    //     case 'Contract':
-    //       return 4;
-    //     default:
-    //       return null;
-    //   }
-    // }),    
-    branch: data.branch,
-    gender: data.gender,
-    tag:data.tag,
-    year:data.year,
-    status: data.status,
-    placed: data.placed,
-  }));
-};
-
-const TypeOptions = [
-  { value: 1, label: 'Full-time' },
-  { value: 2, label: 'Part-time' },
-  { value: 3, label: 'Internship' },
-  { value: 4, label: 'Contract' }
-  // Add more options as needed
-];
-
-
+  const populateFormFields = (data) => {
+    // Convert type array back to string for display
+    let typeString = '';
+    if (Array.isArray(data.type) && data.type.length > 0) {
+      const typeMap = {
+        1: 'Regular',
+        2: 'Lateral Entry',
+        3: 'Transfer', 
+        4: 'International'
+      };
+      typeString = typeMap[data.type[0]] || '';
+    }
+    
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      age: data.age?.toString() || '',
+      status: data.status !== undefined ? data.status : true,
+      type: typeString
+    }));
+  };
 
   useEffect(() => {
     if (alertOpen) {
       getStudentDetails();
-      document.body.classList.add('additional-edit-form-open');
-    } else {
-      document.body.classList.remove('additional-edit-form-open');
     }
   }, [alertOpen]);
 
@@ -154,97 +135,86 @@ const TypeOptions = [
   const handleSubmit = (e) => {
     e.preventDefault();
     updateStudentDetails();
-    handleCloseAlert();
   };
 
   const handleCloseAlert = () => {
     setAlertOpen(false);
-    handleCloseAdditionalInfoForm(); // Call handleCloseAdditionalInfoForm from props
+    handleCloseAdditionalInfoForm?.();
   };
 
   return (
-    <>
-    {alertOpen && <div className="additional-edit-backdrop" onClick={handleCloseAlert}></div>}
-
-    <div className="additional-edit-form-container">
-      <form className="additional-edit-form" onSubmit={handleSubmit}>
-        <div className="additional-edit-form-group">
-          <label htmlFor="name" className="additional-edit-label">Name</label>
-          <input type="text" id="name" name="name" value={formData.name} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="regNo" className="additional-edit-label">Registration Number</label>
-          <input type="text" id="regNo" name="regNo" value={formData.regNo} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="email" className="additional-edit-label">Email</label>
-          <input type="email" id="email" name="email" value={formData.email} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="phone" className="additional-edit-label">Phone Number</label>
-          <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="gender" className="additional-edit-label">Gender</label>
-          <input type="text" id="gender" name="gender" value={formData.gender} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="DoB" className="additional-edit-label">Date of Birth</label>
-          <input type="date" id="DoB" name="DoB" value={formData.DoB} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="tag" className="additional-edit-label">Tag</label>
-          <input type="text" id="tag" name="tag" value={formData.tag} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        {/* Additional fields */}
-        <div className="additional-edit-form-group">
-          <label htmlFor="age" className="additional-edit-label">Age</label>
-          <input type="number" id="age" name="age" value={formData.age} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="cgpa" className="additional-edit-label">CGPA</label>
-          <input type="number" id="cgpa" name="cgpa" value={formData.cgpa} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="tenthMarks" className="additional-edit-label">10th Marks</label>
-          <input type="text" id="tenthMarks" name="tenthMarks" value={formData.tenthMarks} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="twelfthMarks" className="additional-edit-label">12th Marks</label>
-          <input type="text" id="twelfthMarks" name="twelfthMarks" value={formData.twelfthMarks} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="branch" className="additional-edit-label">Branch</label>
-          <input disabled type="text" id="branch" name="branch" value={formData.branch} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="year" className="additional-edit-label">Year</label>
-          <input type="text" id="year" name="year" value={formData.year} onChange={handleChange} className="additional-edit-input" />
-        </div>
-        <div className="additional-edit-form-group">
-          <label htmlFor="type" className="additional-edit-label">Type</label>
-          <Select
-            name="type"
-            id="type"
-            multi
-            options={TypeOptions}
-            onChange={handleTypeChange}
-            values={formData.type.map(type => ({ value: type, label: type }))}
-          />
-        </div>
-        <div  className="additional-edit-form-group">
-          <label htmlFor="placed" className="additional-edit-label">Placed</label>
-          <input  type="checkbox" id="placed" name="placed" checked={formData.placed} onChange={handleChange} className="additional-edit-input" />
-        </div>
+    <Dialog open={alertOpen} onOpenChange={setAlertOpen}>
+      <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Edit Additional Information</DialogTitle>
+          <DialogDescription>
+            Update additional profile information
+          </DialogDescription>
+        </DialogHeader>
         
-        {/* Add more fields here */}
-        <div className="additional-edit-form-buttons">
-          <button type="submit" className="additional-edit-submit">Submit</button>
-          <button type="button" onClick={handleCloseAdditionalInfoForm} className="additional-edit-cancel">Cancel</button>
-        </div>
-      </form>
-    </div>
-    </>
+        {loading ? (
+          <div className="flex justify-center items-center p-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="age">Age</Label>
+                <Input
+                  id="age"
+                  name="age"
+                  type="number"
+                  min="18"
+                  max="50"
+                  value={formData.age}
+                  onChange={handleChange}
+                  placeholder="Enter your age"
+                  required
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="type">Student Type</Label>
+                <Select value={formData.type} onValueChange={(value) => setFormData(prev => ({...prev, type: value}))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select student type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Regular">Regular</SelectItem>
+                    <SelectItem value="Lateral Entry">Lateral Entry</SelectItem>
+                    <SelectItem value="Transfer">Transfer</SelectItem>
+                    <SelectItem value="International">International</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="status">Account Status</Label>
+                <Select value={formData.status.toString()} onValueChange={(value) => setFormData(prev => ({...prev, status: value === 'true'}))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select account status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Active</SelectItem>
+                    <SelectItem value="false">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <DialogFooter className="gap-2">
+              <Button type="button" variant="outline" onClick={handleCloseAlert}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={saving}>
+                {saving ? 'Updating...' : 'Update Information'}
+              </Button>
+            </DialogFooter>
+          </form>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 };
 

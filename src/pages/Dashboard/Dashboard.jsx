@@ -1,897 +1,846 @@
-import './Dashboard.css'
-import Background from '../../Img/multi-blue.jpg'
-import Profile from '../../Img/user.png'
 import React, { useEffect, useState } from 'react';
-import ResumeDownloadButton from '../../components/ResumeDownloadButton/ResumeDownloadButton'; // Importing the ResumeDownloadButton component
-import { FaCommentsDollar, FaFileDownload } from "react-icons/fa";
-import PasswordInput from '../../components/PasswordInput/PasswordInput'; // Importing the PasswordInput component
-import PersonalInfoForm from './PersonalInfoForm'; // Corrected import
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/card';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { Badge } from '../../components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '../../components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../components/ui/tabs';
+import { Separator } from '../../components/ui/separator';
+import { Alert, AlertDescription } from '../../components/ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
+import { 
+  User, 
+  Mail, 
+  Phone, 
+  Calendar, 
+  MapPin, 
+  GraduationCap, 
+  FileText, 
+  Settings, 
+  Download,
+  Edit3,
+  Eye,
+  EyeOff,
+  Shield,
+  BookOpen,
+  Award
+} from 'lucide-react';
+import { toast } from 'react-toastify';
+import Background from '../../Img/multi-blue.jpg';
+import PersonalInfoForm from './PersonalInfoForm';
 import AcademicInfoForm from './AcademicInfoForm';
 import AdditionalInfoForm from './AdditionalInfoForm';
 import ResumeInfoForm from './ResumeInfoForm';
-// import ResumeDownloadBtn from './ResumeDownloadButton.js';
-import ReactDOM from 'react-dom';
-import ReactDOMServer from 'react-dom/server';
-
-
 import axios from 'axios';
 import { buildApiUrl } from '../../utils/config';
 
 
-const Dashboard = (props) => {
+const Dashboard = () => {
     const [loading, setLoading] = useState(true);
-    const [selectedButton, setSelectedButton] = useState(2);
+    const [activeTab, setActiveTab] = useState('overview');
     const [password, setPassword] = useState('');
-    const [newpassword, setnewPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
     const [email, setEmail] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const pdfValue = 'Your PDF value goes here...';
-
-    // Render the FaFileDownload component to a string
-    const fileDownloadIcon = ReactDOMServer.renderToString(<FaFileDownload />);
-
-
-    const handleButtonClick = (buttonId) => {
-        setSelectedButton(buttonId);
-    };
-
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-    };
-
-    const handlenewPasswordChange = (e) => {
-        setnewPassword(e.target.value);
-    };
-
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
-
-    const handleCheckboxChange = () => {
-        setShowPassword(!showPassword);
-    };
-
-
+    const [studentDetail, setStudentDetail] = useState(null);
+    const [placementRules, setPlacementRules] = useState([]);
+    
+    // Modal states for forms
     const [showPersonalInfoForm, setShowPersonalInfoForm] = useState(false);
-
-    const handlePersonalInfoEditClick = () => {
-        setShowPersonalInfoForm(true);
-    };
-
-    const handleClosePersonalInfoForm = () => {
-        setShowPersonalInfoForm(false);
-    };
-
     const [showAcademicInfoForm, setShowAcademicInfoForm] = useState(false);
-
-    const handleAcademicInfoEditClick = () => {
-        setShowAcademicInfoForm(true);
-    };
-
-    const handleCloseAcademicInfoForm = () => {
-        setShowAcademicInfoForm(false);
-    };
-
     const [showAdditionalInfoForm, setShowAdditionalInfoForm] = useState(false);
-
-    const handleAdditionalInfoEditClick = () => {
-        setShowAdditionalInfoForm(true);
-    };
-
-    const handleCloseAdditionalInfoForm = () => {
-        setShowAdditionalInfoForm(false);
-    };
-
     const [showResumeInfoForm, setShowResumeInfoForm] = useState(false);
 
-    const handleResumeInfoEditClick = () => {
-        setShowResumeInfoForm(true);
+    // Generate user initials for avatar
+    const getUserInitials = (name) => {
+        if (!name) return 'U';
+        const nameParts = name.trim().split(' ');
+        if (nameParts.length === 1) {
+            return nameParts[0].charAt(0).toUpperCase();
+        }
+        return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
     };
 
-    const handleCloseResumeInfoForm = () => {
-        setShowResumeInfoForm(false);
+    // Generate consistent color for avatar
+    const getUserColor = (name) => {
+        const colors = [
+            'bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500',
+            'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-teal-500',
+            'bg-orange-500', 'bg-cyan-500'
+        ];
+        
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return colors[Math.abs(hash) % colors.length];
     };
-
-
-
-
-    // Getting data from the api, and putting manual data
-
-    const [studentDetail, setStudentDetail] = useState(null);
+    // API Functions
     const getStudentDetails = async () => {
         try {
             const storedData = localStorage.getItem('userData');
-            if (!storedData) return;
-            var parsedData = JSON.parse(storedData);
-            console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
-            var student_id=parsedData.newStudent._id;
+            if (!storedData) {
+                toast.error('No user data found');
+                return;
+            }
+            
+            const parsedData = JSON.parse(storedData);
+            console.log('Stored user data:', parsedData); // Debug log
+            
+            // Handle both login response formats: {student, token} and {newStudent, token}
+            const student_id = parsedData.student?._id || parsedData.newStudent?._id || parsedData.user?._id;
+            
+            if (!student_id) {
+                console.error('User data structure:', parsedData);
+                toast.error('Invalid user data - unable to find student ID');
+                return;
+            }
+
+            console.log('Using student ID:', student_id); // Debug log
             const url = buildApiUrl(`students/${student_id}`);
             const response = await axios.get(url);
-            console.log("response data is", response.data)
             setStudentDetail(response.data);
             setLoading(false);
         } catch (error) {
-            console.log("got the error while fetching the data", error);
+            console.error("Error fetching student details:", error);
+            toast.error('Failed to load student details');
+            setLoading(false);
         }
     };
 
-    const [placementRule, setPlacementRule] = useState('');
-
     const getPlacementDetails = async () => {
         try {
-            setLoading(true);
             const url = buildApiUrl('placementRules');
             const response = await axios.get(url);
-            setPlacementRule(response.data);
-            setLoading(false);
-            console.log("placement rule data is", response.data)
-            const ruleDiv = document.querySelector('.rule-name-div');
-            var data=response.data[0].rules
-            if (ruleDiv) {
-                // Clear existing content
-                ruleDiv.innerHTML = '';
-
-                // Create a new ul elementc
-                console.log("ul element created")
-                const ulElement = document.createElement('ul');
-
-                // Iterate over the data and create li elements
-                console.log("data", data)
-                data.forEach(rule => {
-                    const liElement = document.createElement('li');
-                    console.log("li element created") 
-                    liElement.textContent = rule;
-                    ulElement.appendChild(liElement);
-                });
-
-                // Append the ul element to the ruleDiv
-                ruleDiv.appendChild(ulElement);
-            }
+            setPlacementRules(response.data[0]?.rules || []);
         } catch (error) {
-            console.log("got the error while fetching the placement details")
+            console.error("Error fetching placement rules:", error);
+            toast.error('Failed to load placement rules');
         }
-    }
+    };
+
+    const updatePassword = async () => {
+        if (!email || !password || !newPassword) {
+            toast.error('Please fill all password fields');
+            return;
+        }
+
+        try {
+            const storedData = localStorage.getItem('userData');
+            if (!storedData) {
+                toast.error('No user data found');
+                return;
+            }
+
+            const parsedData = JSON.parse(storedData);
+            // Handle both login response formats: {student, token} and {newStudent, token}
+            const student_id = parsedData.student?._id || parsedData.newStudent?._id || parsedData.user?._id;
+
+            const url = buildApiUrl(`updatePassword/${student_id}`);
+            const data = {
+                email: email,
+                password: password,
+                newpassword: newPassword
+            };
+
+            await axios.post(url, data);
+            toast.success('Password updated successfully!');
+            setPassword('');
+            setNewPassword('');
+            setEmail('');
+        } catch (error) {
+            console.error("Error updating password:", error);
+            toast.error('Failed to update password');
+        }
+    };
+
+    const downloadResume = () => {
+        if (!studentDetail?.file?.data) {
+            toast.error('No resume file found');
+            return;
+        }
+
+        try {
+            const uintArray = new Uint8Array(studentDetail.file.data);
+            const blob = new Blob([uintArray], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${studentDetail.name}_Resume.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            toast.success('Resume downloaded successfully!');
+        } catch (error) {
+            console.error("Error downloading resume:", error);
+            toast.error('Failed to download resume');
+        }
+    };
 
     useEffect(() => {
         getPlacementDetails();
         getStudentDetails();
-
     }, []);
 
     useEffect(() => {
-        // Update HTML elements here
-        console.log("student detals is", studentDetail)
-        setTimeout(() => { updateHTML() }, 1000);
+        if (studentDetail) {
+            console.log("Student details loaded:", studentDetail);
+        }
     }, [studentDetail]);
 
-    const updatePassword = async () => {
-        try {
-            const storedData = localStorage.getItem('userData');
-            if (!storedData) return;
-            var parsedData = JSON.parse(storedData);
-            console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
-            var student_id=parsedData.newStudent._id;
-            const url = buildApiUrl(`updatePassword/${student_id}`);
-            const data={
-                "email":email,
-                "password":password,
-                "newpassword":newpassword
-            }
-            const response = await axios.post(url, data);
-            console.log("passwordUpdated", response.data)
-            window.location.reload();
+    // Helper function to format date
+    const formatDate = (dateString) => {
+        if (!dateString) return 'NA';
+        return new Date(dateString).toLocaleDateString('en-GB');
+    };
 
-        
-        } catch (error) {
-            console.log("got the error while fetching the placement details")
-        }
+    // Helper function to get status badge variant
+    const getStatusVariant = (status) => {
+        return status === true || status === 'Approved' ? 'default' : 'destructive';
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+                    <p className="mt-4 text-lg text-muted-foreground">Loading your dashboard...</p>
+                </div>
+            </div>
+        );
     }
 
+    if (!studentDetail) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <Alert className="max-w-md">
+                    <AlertDescription>
+                        Unable to load student information. Please try refreshing the page.
+                    </AlertDescription>
+                </Alert>
+            </div>
+        );
+    }
 
-    // useEffect(() => {
-    //     // Check if studentDetail exists before logging
-    //     if (studentDetail) {
-    //         console.log("getting student details like", studentDetail);
-    //     }
-    // }, [studentDetail]); // Dependency array with studentDetail
-    const updateHTML = () => {
-        // Update HTML elements based on studentDetail
-        if (!studentDetail) {
-            // console.error('Caught above Error: studentDetail is null or undefined');
-            return;
-        }
-
-        const nameElement = document.querySelector('.personal-name');
-        if (nameElement) {
-            nameElement.textContent = studentDetail.name || 'NA';
-        }
-
-        const regNumberElement = document.querySelector('.personal-reg');
-        if (regNumberElement) {
-            regNumberElement.textContent = studentDetail.registrationNumber || 'NA';
-        }
-
-        const emailElement = document.querySelector('.personal-email');
-        if (emailElement) {
-            emailElement.textContent = studentDetail.email || 'NA';
-        }
-
-        const phoneElement = document.querySelector('.personal-phone');
-        if (phoneElement) {
-            phoneElement.textContent = studentDetail.phoneNumber || 'NA';
-        }
-
-        const genderElement = document.querySelector('.personal-gender');
-        if (genderElement) {
-            genderElement.textContent = studentDetail.gender || 'NA';
-        }
-        
-        const dashboardName = document.querySelector('.dashboardName');
-        if (dashboardName) {
-            dashboardName.textContent = studentDetail.name || 'NA';
-        }
-
-        const dashboardStatus = document.querySelector('.dashboardStatus');
-        if (dashboardStatus) {
-            dashboardStatus.textContent = studentDetail.status==true?'Approved': 'Rejected';
-        }
-
-        const dobElement = document.querySelector('.personal-dob');
-        if (dobElement) {
-            dobElement.textContent = studentDetail.dob ? studentDetail.dob.substring(0, 10).split('-').reverse().join('-') : 'NA';
-        }
-
-        const tagElement = document.querySelector('.personal-tag');
-        if (tagElement) {
-            tagElement.textContent = studentDetail.tag || 'NA';
-        }
-
-        // Similarly, update other elements...
-
-        // Update academic information
-        const academicNameDivValue = document.querySelector('.academic-name-div-value');
-        if (academicNameDivValue) {
-            academicNameDivValue.textContent = studentDetail.name || 'NA';
-        }
-
-        const academicRegNameDivValue = document.querySelector('.academic-regName-div-value');
-        if (academicRegNameDivValue) {
-            academicRegNameDivValue.textContent = studentDetail.registrationNumber || 'NA';
-        }
-
-        const academicEmailDivValue = document.querySelector('.academic-email-div-value');
-        if (academicEmailDivValue) {
-            academicEmailDivValue.textContent = studentDetail.email || 'NA';
-        }
-
-        const academicPhoneDivValue = document.querySelector('.academic-phone-div-value');
-        if (academicPhoneDivValue) {
-            academicPhoneDivValue.textContent = studentDetail.phoneNumber || 'NA';
-        }
-
-        const academicGenderDivValue = document.querySelector('.academic-gender-div-value');
-        if (academicGenderDivValue) {
-            academicGenderDivValue.textContent = studentDetail.gender || 'NA';
-        }
-
-        const academicDOBDivValue = document.querySelector('.academic-dob-div-value');
-        if (academicDOBDivValue) {
-            academicDOBDivValue.textContent = studentDetail.dob ? studentDetail.dob.substring(0, 10).split('-').reverse().join('-') : 'NA';
-        }
-
-        const academicTagDivValue = document.querySelector('.academic-tag-div-value');
-        if (academicTagDivValue) {
-            academicTagDivValue.textContent = studentDetail.tag || 'NA';
-        }
-
-        // Update additional information
-        const additionalNameDivValue = document.querySelectorAll('.additional-name-div-value');
-        if (additionalNameDivValue) {
-            additionalNameDivValue.forEach(element => {
-                element.textContent = studentDetail.name || 'NA';
-            });
-        }
-
-        const additionalRegNameDivValue = document.querySelectorAll('.additional-regName-div-value');
-        if (additionalRegNameDivValue) {
-            additionalRegNameDivValue.forEach(element => {
-                element.textContent = studentDetail.registrationNumber || 'NA';
-            });
-        }
-
-        const additionalEmailDivValue = document.querySelectorAll('.additional-email-div-value');
-        if (additionalEmailDivValue) {
-            additionalEmailDivValue.forEach(element => {
-                element.textContent = studentDetail.email || 'NA';
-            });
-        }
-
-        const additionalPhoneDivValue = document.querySelectorAll('.additional-phone-div-value');
-        if (additionalPhoneDivValue) {
-            additionalPhoneDivValue.forEach(element => {
-                element.textContent = studentDetail.phoneNumber || 'NA';
-            });
-        }
-
-        const additionalGenderDivValue = document.querySelectorAll('.additional-gender-div-value');
-        if (additionalGenderDivValue) {
-            additionalGenderDivValue.forEach(element => {
-                element.textContent = studentDetail.gender || 'NA';
-            });
-        }
-
-        const additionalDOBDivValue = document.querySelectorAll('.additional-dob-div-value');
-        if (additionalDOBDivValue) {
-            additionalDOBDivValue.forEach(element => {
-                element.textContent = studentDetail.dob ? studentDetail.dob.substring(0, 10).split('-').reverse().join('-') : 'NA';
-            });
-        }
-
-        const additionalTagDivValue = document.querySelectorAll('.additional-tag-div-value');
-        if (additionalTagDivValue) {
-            additionalTagDivValue.forEach(element => {
-                element.textContent = studentDetail.tag || 'NA';
-            });
-        }
-
-        const additionalAgeDivValue = document.querySelectorAll('.additional-age-div-value');
-        if (additionalAgeDivValue) {
-            additionalAgeDivValue.forEach(element => {
-                element.textContent = studentDetail.age || 'NA';
-            });
-        }
-
-        const additionalStatusDivValue = document.querySelectorAll('.additional-status-div-value');
-        if (additionalStatusDivValue) {
-            additionalStatusDivValue.forEach(element => {
-                element.textContent = studentDetail.status || 'NA';
-            });
-        }
-
-        const additionalCGPADivValue = document.querySelectorAll('.additional-cgpa-div-value');
-        if (additionalCGPADivValue) {
-            additionalCGPADivValue.forEach(element => {
-                element.textContent = studentDetail.cgpa || 'NA';
-            });
-        }
-
-        const additionalTenthMarksDivValue = document.querySelectorAll('.additional-tenth-div-value');
-        if (additionalTenthMarksDivValue) {
-            additionalTenthMarksDivValue.forEach(element => {
-                element.textContent = studentDetail.tenthMarks ? studentDetail.tenthMarks : 'NA';
-            });
-        }
-
-        const additionalTwelfthMarksDivValue = document.querySelectorAll('.additional-twelfth-div-value');
-        if (additionalTwelfthMarksDivValue) {
-            additionalTwelfthMarksDivValue.forEach(element => {
-                element.textContent = studentDetail.twelfthMarks || 'NA';
-            });
-        }
-
-        const additionalYearDivValue = document.querySelectorAll('.additional-year-div-value');
-        if (additionalYearDivValue) {
-            additionalYearDivValue.forEach(element => {
-                element.textContent = studentDetail.year || 'NA';
-            });
-        }
-
-        const additionalBranchDivValue = document.querySelectorAll('.additional-branch-div-value');
-        if (additionalBranchDivValue) {
-            additionalBranchDivValue.forEach(element => {
-                element.textContent = studentDetail.branch ? studentDetail.branch : 'NA';
-            });
-        }
-
-        const additionalPlacedDivValue = document.querySelectorAll('.additional-placed-div-value');
-        if (additionalPlacedDivValue) {
-            additionalPlacedDivValue.forEach(element => {
-                element.textContent = studentDetail.placed || 'NA';
-            });
-        }
-        const additionalTypeDivValue = document.querySelectorAll('.additional-type-div-value');
-        if (additionalTypeDivValue) {
-            additionalTypeDivValue.forEach(element => {
-                element.textContent = studentDetail.type || 'NA';
-            });
-        }
-
-        const resumeNameDivKey = document.querySelectorAll('.resume-name-div-key');
-        if (resumeNameDivKey) {
-            resumeNameDivKey.forEach(element => {
-                element.innerHTML = `<b><span style="margin-right: 5px;">${fileDownloadIcon}</span>${studentDetail.name ? studentDetail.name + '_Resume' : 'NA'}</b>`;
-            });
-        }
-        const { file } = studentDetail;
-
-        // Check if the file data exists
-        if (file && file.type === 'Buffer' && Array.isArray(file.data)) {
-            const resumeDiv = document.querySelector('.resume-name-div-value');
-
-            if (resumeDiv) {
-                const binaryData = [
-                    37, 80, 68, 70, 45, 49, 46, 52, 10, 37, 226, 227, 207, 211, 10, 50, 32,
-                    48, 32, 111, 98, 106, 10, 60, 60, 10, 47, 84, 121, 112, 101, 32, 47, 80,
-                    97, 103, 101, 10, 47, 77, 111, 100, 68, 97, 116, 101, 32, 40, 68, 58, 49,
-                    54, 48, 51, 48, 54, 48, 52, 48, 56, 43, 48, 51, 39, 48, 48, 39, 41, 10, 47,
-                    76, 101, 110, 103, 116, 104, 32, 49, 48, 32, 48, 32, 82, 10, 47, 70, 105,
-                    108, 116, 101, 114, 32, 47, 70, 108, 97, 116, 101, 68, 101, 99, 111, 100,
-                    101, 10, 62, 62, 10, 115, 116, 114, 101, 97, 109, 10, 120, 121, 122, 10, 101,
-                    110, 100, 115, 116, 114, 101, 97, 109, 10, 101, 110, 100, 111, 98, 106, 10,
-                    101, 110, 100, 111, 98, 106, 10, 49, 32, 48, 32, 111, 98, 106, 10, 60, 60,
-                    47, 84, 121, 112, 101, 32, 47, 70, 111, 110, 116, 10, 47, 83, 117, 98, 116,
-                    121, 112, 101, 32, 47, 84, 121, 112, 101, 49, 10, 47, 66, 97, 115, 101, 70,
-                    111, 110, 116, 32, 47, 84, 105, 109, 101, 115, 45, 82, 111, 109, 97, 110, 10,
-                    62, 62, 10, 101, 110, 100, 111, 98, 106, 10, 101, 110, 100, 111, 98, 106, 10,
-                    101, 110, 100, 111, 98, 106, 10, 101, 110, 100, 111, 98, 106, 10
-                ];
-
-                // Convert the array of numbers into Uint8Array
-                //   const uintArray = new Uint8Array(file.data);
-                const uintArray = new Uint8Array(binaryData);
-
-                // Convert the Uint8Array into a Blob
-                const blob = new Blob([uintArray], { type: 'application/pdf' });
-
-
-                // Update the content of the div
-                resumeDiv.innerHTML = `
-        <button onclick="downloadResume()">Download</button>
-      `;
-
-                // Define the downloadResume function
-                window.downloadResume = function () {
-                    // Create a temporary URL for the Blob
-                    const url = URL.createObjectURL(blob);
-
-                    // Create a link element
-                    const link = document.createElement('a');
-                    link.href = url;
-
-                    // Set the filename for the download
-                    link.setAttribute('download', 'resume.pdf');
-
-                    // Append the link to the body and trigger the click event
-                    document.body.appendChild(link);
-                    link.click();
-
-                    // Clean up
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                };
-            }
-        }
-    };
+    const userInitials = getUserInitials(studentDetail.name);
+    const userColor = getUserColor(studentDetail.name || 'User');
 
 
     return (
-        <div className="dashboard">
-            <div className="dashboard-background">
-                <img src={Background}></img>
-            </div>
-            <div className="dashboard-details">
-                {loading ? (
-                    <p>Loading...</p>
-                ) : (
-                    <div className="dashboard-details-card">
-                        <div className="dashboard-img">
-                            <img src={Profile}></img>
-                        </div>
-                        <div className="dashboard-name-status">
-                            <p style={{ fontWeight: "bold", fontSize: "1.7em", margin: '0' }} className="dashboardName">NA</p>
-                            <p style={{ color: "green", fontSize: "1.2em", margin: '0' }} className="dashboardStatus">NA</p>
-                        </div>
-                        <div className="dashboard-personal">
-                            <div className="dashboard-personal-head">
-                                <div>
-                                    Personal Information
-                                </div>
-                                <div>
-                                    <button className="personal-edit" onClick={handlePersonalInfoEditClick}>Edit</button>
-                                </div>
-                            </div>
-                            <div className='dashboard-personal-name personal-div'>
-                                <div className="personal-head-name personal-div-left">
-                                    <b>Name</b>
-                                </div>
-                                <div className="personal-name personal-div-right">
-                                    NA
-                                </div>
-                            </div>
-                            <div className='dashboard-personal-reg personal-div'>
-                                <div className="personal-head-reg personal-div-left">
-                                    <b>Reg No.</b>
-                                </div>
-                                <div className="personal-reg personal-div-right">
-                                    NA
-                                </div>
-                            </div>
-                            <div className='dashboard-personal-email personal-div'>
-                                <div className="personal-head-email personal-div-left">
-                                    <b>Email</b>
-                                </div>
-                                <div className="personal-email personal-div-right">
-                                    NA
-                                </div>
-                            </div>
-                            <div className='dashboard-personal-phone personal-div'>
-                                <div className="personal-head-phone personal-div-left">
-                                    <b>Phone</b>
-                                </div>
-                                <div className="personal-phone personal-div-right">
-                                    NA
-                                </div>
-                            </div>
-                            <div className='dashboard-personal-gender personal-div'>
-                                <div className="personal-head-gender personal-div-left">
-                                    <b>Gender</b>
-                                </div>
-                                <div className="personal-gender personal-div-right">
-                                    NA
-                                </div>
-                            </div>
-                            <div className='dashboard-personal-dob personal-div'>
-                                <div className="personal-head-dob personal-div-left">
-                                    <b>D O B</b>
-                                </div>
-                                <div className="personal-dob personal-div-right">
-                                    NA
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+            {/* Hero Background Section */}
+            <div className="relative bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+                <img 
+                    src={Background} 
+                    alt="Background" 
+                    className="absolute inset-0 w-full h-full object-cover opacity-20"
+                />
+                <div className="absolute inset-0 bg-black/10"></div>
+                
+                <div className="relative container mx-auto px-4 py-12">
+                    {/* Profile Card */}
+                    <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0 max-w-4xl mx-auto">
+                        <CardContent className="p-8">
+                            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+                                <Avatar className="h-24 w-24 md:h-32 md:w-32 ring-4 ring-white/20">
+                                    <AvatarFallback className={`${userColor} text-white font-bold text-2xl md:text-3xl`}>
+                                        {userInitials}
+                                    </AvatarFallback>
+                                </Avatar>
+                                
+                                <div className="flex-1 text-center md:text-left">
+                                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                        <div>
+                                            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                                                {studentDetail.name || 'Student Name'}
+                                            </h1>
+                                            <p className="text-gray-600 text-lg">
+                                                {studentDetail.registrationNumber || 'Registration Number'}
+                                            </p>
+                                        </div>
+                                        <Badge 
+                                            variant={getStatusVariant(studentDetail.status)} 
+                                            className="text-sm px-4 py-2"
+                                        >
+                                            {studentDetail.status === true ? 'Approved' : 'Pending Approval'}
+                                        </Badge>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                                        <div className="flex items-center gap-3 text-gray-600">
+                                            <div className="p-2 bg-blue-100 rounded-full">
+                                                <Mail className="h-4 w-4 text-blue-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-500 uppercase tracking-wide">Email</p>
+                                                <p className="font-medium truncate">{studentDetail.email || 'Not available'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3 text-gray-600">
+                                            <div className="p-2 bg-green-100 rounded-full">
+                                                <Phone className="h-4 w-4 text-green-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-500 uppercase tracking-wide">Phone</p>
+                                                <p className="font-medium">{studentDetail.phoneNumber || 'Not available'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-3 text-gray-600">
+                                            <div className="p-2 bg-purple-100 rounded-full">
+                                                <GraduationCap className="h-4 w-4 text-purple-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-gray-500 uppercase tracking-wide">Branch</p>
+                                                <p className="font-medium">{studentDetail.branch || 'Not specified'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className='dashboard-personal-tag personal-div'>
-                                <div className="personal-head-tag personal-div-left">
-                                    <b>Tag</b>
-                                </div>
-                                <div className="personal-tag personal-div-right">
-                                    NA
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                )}
-
-                <div className="dashboard-details-cap">
-
-                    <div className="details-cap-button-container">
-                        {/* <div><button className={selectedButton === 1 ? 'selected' : ''} onClick={() => handleButtonClick(1)}>Academic Information</button></div> */}
-                        <div><button className={selectedButton === 2 ? 'selected' : ''} onClick={() => handleButtonClick(2)}>Additional Information</button></div>
-                        <div><button className={selectedButton === 3 ? 'selected' : ''} onClick={() => handleButtonClick(3)}>Resume</button></div>
-                        <div><button className={selectedButton === 4 ? 'selected' : ''} onClick={() => handleButtonClick(4)}>Account Settings</button></div>
-                        <div><button className={selectedButton === 5 ? 'selected' : ''} onClick={() => handleButtonClick(5)}>Placement Rules</button></div>
-                    </div>
-                    <div className='details-cap-card academic-card' style={{ display: selectedButton === 1 ? 'block' : 'none' }}>
-                        <div className='cap-card-header-details'>
-                            <div className="cap-card-header-head cap-academic">
-                                Academic Information
-                            </div>
-                            <div>
-                                <button className="academic-edit" onClick={handleAcademicInfoEditClick}> Edit</button>
-                            </div>
-                        </div>
-                        <div className='cap-details-container'>
-                            <div className='academic-name-div cap-div'>
-                                <div className="academic-name-div-key cap-div-left">
-                                    <b>Name</b>
-                                </div>
-                                <div className="academic-name-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='academic-regName-div cap-div'>
-                                <div className="academic-regName-div-key cap-div-left">
-                                    <b>Reg No.</b>
-                                </div>
-                                <div className="academic-regName-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='academic-email-div cap-div'>
-                                <div className="academic-email-div-key cap-div-left">
-                                    <b>Email</b>
-                                </div>
-                                <div className="academic-email-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='academic-phone-div cap-div'>
-                                <div className="academic-phone-div-key cap-div-left">
-                                    <b>Phone</b>
-                                </div>
-                                <div className="academic-phone-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='academic-gender-div cap-div'>
-                                <div className="academic-gender-div-key cap-div-left">
-                                    <b>Gender</b>
-                                </div>
-                                <div className="academic-gender-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='academic-dob-div cap-div'>
-                                <div className="academic-dob-div-key cap-div-left">
-                                    <b>D O B</b>
-                                </div>
-                                <div className="academic-dob-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='academic-tag-div cap-div'>
-                                <div className="academic-tag-div-key cap-div-left">
-                                    <b>Tag</b>
-                                </div>
-                                <div className="academic-tag-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='details-cap-card additional-card' style={{ display: selectedButton === 2 ? 'block' : 'none' }}>
-                        <div className='cap-card-header-details'>
-                            <div className="cap-card-header-head cap-additional">
-                                Additional Information
-                            </div>
-                            <div>
-                                <button className="additional-edit" onClick={handleAdditionalInfoEditClick}> Edit</button>
-                            </div>
-                        </div>
-                        <div className='cap-details-container'>
-                            <div className='additional-name-div cap-div'>
-                                <div className="additional-name-div-key cap-div-left">
-                                    <b>Name</b>
-                                </div>
-                                <div className="additional-name-div-value cap-div-right">
-                                    Ajay Singh
-                                </div>
-                            </div>
-
-                            <div className='additional-regName-div cap-div'>
-                                <div className="additional-regName-div-key cap-div-left">
-                                    <b>Reg No.</b>
-                                </div>
-                                <div className="additional-regName-div-value cap-div-right">
-                                    20BAI2319
-                                </div>
-                            </div>
-
-                            <div className='additional-email-div cap-div'>
-                                <div className="additional-email-div-key cap-div-left">
-                                    <b>Email</b>
-                                </div>
-                                <div className="additional-email-div-value cap-div-right">
-                                    ajay@gmail.com
-                                </div>
-                            </div>
-
-                            <div className='additional-phone-div cap-div'>
-                                <div className="academic-phone-div-key cap-div-left">
-                                    <b>Phone</b>
-                                </div>
-                                <div className="additional-phone-div-value cap-div-right">
-                                    4323422434
-                                </div>
-                            </div>
-
-                            <div className='additional-gender-div cap-div'>
-                                <div className="additional-gender-div-key cap-div-left">
-                                    <b>Gender</b>
-                                </div>
-                                <div className="academic-gender-div-value cap-div-right">
-                                    Male
-                                </div>
-                            </div>
-
-                            <div className='additional-dob-div cap-div'>
-                                <div className="additional-dob-div-key cap-div-left">
-                                    <b>D O B</b>
-                                </div>
-                                <div className="additional-dob-div-value cap-div-right">
-                                    20/12/2003
-                                </div>
-                            </div>
-
-                            <div className='additional-tag-div cap-div'>
-                                <div className="additional-tag-div-key cap-div-left">
-                                    <b>Tag</b>
-                                </div>
-                                <div className="additional-tag-div-value cap-div-right">
-                                    Approved
-                                </div>
-                            </div>
-                            <div className='additional-age-div cap-div'>
-                                <div className="additional-age-div-key cap-div-left">
-                                    <b>Age</b>
-                                </div>
-                                <div className="additional-age-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='additional-status-div cap-div'>
-                                <div className="additional-status-div-key cap-div-left">
-                                    <b>Status</b>
-                                </div>
-                                <div className="additional-status-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='additional-cgpa-div cap-div'>
-                                <div className="additional-cgpa-div-key cap-div-left">
-                                    <b>CGPA</b>
-                                </div>
-                                <div className="additional-cgpa-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='additional-tenth-div cap-div'>
-                                <div className="additional-tenth-div-key cap-div-left">
-                                    <b>Tenth Marks</b>
-                                </div>
-                                <div className="additional-tenth-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='additional-twelfth-div cap-div'>
-                                <div className="additional-twelfth-div-key cap-div-left">
-                                    <b>Twelfth Marks</b>
-                                </div>
-                                <div className="additional-twelfth-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='additional-year-div cap-div'>
-                                <div className="additional-year-div-key cap-div-left">
-                                    <b>Batch Year</b>
-                                </div>
-                                <div className="additional-year-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='additional-branch-div cap-div'>
-                                <div className="additional-branch-div-key cap-div-left">
-                                    <b>Branch</b>
-                                </div>
-                                <div className="additional-branch-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='additional-placed-div cap-div'>
-                                <div className="additional-placed-div-key cap-div-left">
-                                    <b>Placed</b>
-                                </div>
-                                <div className="additional-placed-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                            <div className='additional-type-div cap-div'>
-                                <div className="additional-type-div-key cap-div-left">
-                                    <b>Type</b>
-                                </div>
-                                <div className="additional-type-div-value cap-div-right">
-                                    NA
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <div className='details-cap-card resume-card' style={{ display: selectedButton === 3 ? 'block' : 'none' }}>
-                        <div className='cap-card-header-details resume-detail-container'>
-                            <div className="cap-card-header-head cap-resume">
-                                Resume
-                            </div>
-                            <div>
-                            <button className="resume-edit" onClick={handleResumeInfoEditClick}>Edit</button>
-                            </div>
-                        </div>
-                        <div className='resume-name-div cap-div'>
-                            <div className="resume-name-div-key cap-div-left">
-                                <b><FaFileDownload style={{ marginRight: "30px" }} />Resume</b>
-                            </div>
-                            {/* <div className="resume-name-div-value">Download</div> */}
-                            <div className="resume-name-div-value"><ResumeDownloadButton pdfValue={pdfValue} /></div>   
-                        </div>
-                    </div>
-                    <div className='details-cap-card password-card' style={{ display: selectedButton === 4 ? 'block' : 'none' }}>
-                        <div className='cap-card-header-details password-detail-container'>
-                            <div className="cap-card-header-head cap-resume">
-                                Password Management
-                            </div>
-                        </div>
-                        <div className='password-name-div'>
-                            <div className="password-name-div-row">
-                                <div className="password-name-div-key">
-                                    <b>Email</b>
-                                </div>
-                                <div className="password-name-div-value">
-                                    <input type="email" className="current-email" value={email} onChange={handleEmailChange} />
-                                </div>
-                            </div>
-                            <div className="password-name-div-row">
-                                <div className="password-name-div-key">
-                                    <b>Enter Current Password</b>
-                                </div>
-                                <div className="password-name-div-value">
-                                    <input type={showPassword ? "text" : "password"} className="current-password" value={password} onChange={handlePasswordChange} />
-                                </div>
-                            </div>
-                            <div className="password-name-div-row">
-                                <div className="password-name-div-key">
-                                    <b>Enter New Password</b>
-                                </div>
-                                <div className="password-name-div-value">
-                                    <input type={showPassword ? "text" : "password"} className="new-password" value={newpassword} onChange={handlenewPasswordChange} />
-                                </div>
-                            </div>
-                            <label htmlFor="showPassword">
-                                <input
-                                    type="checkbox"
-                                    id="showPassword"
-                                    className="current-password"
-                                    checked={showPassword}
-                                    onChange={handleCheckboxChange}
-                                />
-                                Show Password
-                            </label>
-                            <div className="password-name-div-submit">
-                                <button className='password-edit' onClick={updatePassword}>Submit</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div className='details-cap-card rule-card' style={{ display: selectedButton === 5 ? 'block' : 'none' }}>
-                        <div className='cap-card-header-details rule-detail-container'>
-                            <div className="cap-card-header-head cap-rule">
-                                Placement Norms
-                            </div>
-                        </div>
-                        <div className='rule-name-div'>
-                            <ul>
-                                <li>A student who applies for any job/internship position is bound to go through the entire selection process unless rejected midway by the company.</li>
-                                <li>Any student who withdraws deliberately in the midst of a selection process will be considered as a case of absenteeism.</li>
-                                <ul>
-                                    <li>Absenteeism: A student not attending the PPT, Test, Interview, and any other criterion required by a company after registering and without prior intimation (at least 24 hrs prior to the placement process via email) will be deemed as absent.</li>
-                                    <li>Absenteeism anytime will lead to suspension of student account on OCCaP placement portal. The decision of revocation of student account will rest solely with OCCaP.</li>
-                                </ul>
-                                <li>Students should maintain discipline and decorum in every action they take during the placement process.</li>
-                                <li>Any student found violating any rules of general ethics and etiquette as deemed by the company or OCCaP, or defaming the Institute will be debarred from the placement process for the entire placement season.</li>
-                                <li>Students found cheating or misbehaving during the selection process (PPT/Test/GD/Interview) will be debarred from the placement process. Any kind of misbehavior by the student will lead to debarment of the student from any further placement activity.</li>
-                                <li>During online tests, students should ensure that email or any other communication client (other than the one prescribed by the recruiter) is not active on their laptop during the test.</li>
-                                <li>Students are expected to follow the dress code stipulated by OCCaP.</li>
-                                <ul>
-                                    <li>Students must be formally dressed whenever they participate in any sort of interaction with a company.</li>
-                                    <li>Formal clothes for men include a formal shirt and trousers, and leather shoes. Formal clothes for women include either a pair of Salwar-Kameez (no binge) or formal shirt and trousers. Ties and other formal accessories are optional. Accessories deemed unsuitable by OCCaP, such as sunglasses, are strictly prohibited.</li>
-                                    <li>OCCaP reserves the right to restrict or prohibit the use of any accessory that it finds improper.</li>
-                                    <li>Students, both women and men, are advised to have a business suit available in case a company stipulates that students attend the process suited up. Women are advised to have a saree available as well.</li>
-                                    <li>Tee shirts, jeans, casual shirts, caps, and other informal wear are strictly prohibited. Students found violating the dress code will be disallowed from attending the process and treated as absent, as regulated by the rule above.</li>
-                                </ul>
-                                <li>Students must carry their Institute Identity cards at all times during the placement process.</li>
-                                <li>Impersonation will lead to debarment from placement, and further action may be pursued at the Institute level.</li>
-                            </ul>
-                        </div>
-                    </div>
-                    {showPersonalInfoForm && <PersonalInfoForm handleClosePersonalInfoForm={handleClosePersonalInfoForm} />}
-                    {showAcademicInfoForm && <AcademicInfoForm handleCloseAcademicInfoForm={handleCloseAcademicInfoForm} />}
-                    {showAdditionalInfoForm && <AdditionalInfoForm handleCloseAdditionalInfoForm={handleCloseAdditionalInfoForm} />}
-                    {showResumeInfoForm && <ResumeInfoForm handleCloseResumeInfoForm={handleCloseResumeInfoForm} />}
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
 
+            {/* Main Content */}
+            <div className="container mx-auto px-4 py-8">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-5 mb-8">
+                        <TabsTrigger value="overview" className="flex items-center gap-2">
+                            <User className="h-4 w-4" />
+                            <span className="hidden sm:inline">Overview</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="academic" className="flex items-center gap-2">
+                            <BookOpen className="h-4 w-4" />
+                            <span className="hidden sm:inline">Academic</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="resume" className="flex items-center gap-2">
+                            <FileText className="h-4 w-4" />
+                            <span className="hidden sm:inline">Resume</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="settings" className="flex items-center gap-2">
+                            <Settings className="h-4 w-4" />
+                            <span className="hidden sm:inline">Settings</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="rules" className="flex items-center gap-2">
+                            <Shield className="h-4 w-4" />
+                            <span className="hidden sm:inline">Rules</span>
+                        </TabsTrigger>
+                    </TabsList>
+
+                    {/* Overview Tab */}
+                    <TabsContent value="overview" className="space-y-6">
+                        {/* Quick Stats Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <Card className="p-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-blue-100 rounded-full">
+                                        <GraduationCap className="h-5 w-5 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">CGPA</p>
+                                        <p className="text-xl font-bold">{studentDetail.cgpa || 'N/A'}</p>
+                                    </div>
+                                </div>
+                            </Card>
+                            
+                            <Card className="p-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-green-100 rounded-full">
+                                        <Award className="h-5 w-5 text-green-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Placement Status</p>
+                                        <Badge variant={studentDetail.placed ? "default" : "secondary"} className="text-sm">
+                                            {studentDetail.placed ? 'Placed' : 'Not Placed'}
+                                        </Badge>
+                                    </div>
+                                </div>
+                            </Card>
+                            
+                            <Card className="p-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-purple-100 rounded-full">
+                                        <Calendar className="h-5 w-5 text-purple-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Batch Year</p>
+                                        <p className="text-xl font-bold">{studentDetail.year || 'N/A'}</p>
+                                    </div>
+                                </div>
+                            </Card>
+                            
+                            <Card className="p-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-orange-100 rounded-full">
+                                        <FileText className="h-5 w-5 text-orange-600" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Resume</p>
+                                        <Badge variant={studentDetail.file ? "default" : "secondary"} className="text-sm">
+                                            {studentDetail.file ? 'Uploaded' : 'Not Uploaded'}
+                                        </Badge>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Personal Information */}
+                            <Card>
+                                <CardHeader className="flex flex-row items-center justify-between">
+                                    <div>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <User className="h-5 w-5" />
+                                            Personal Information
+                                        </CardTitle>
+                                        <CardDescription>
+                                            Complete personal profile details
+                                        </CardDescription>
+                                    </div>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => setShowPersonalInfoForm(true)}
+                                    >
+                                        <Edit3 className="h-4 w-4 mr-2" />
+                                        Edit
+                                    </Button>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">Full Name</Label>
+                                            <p className="text-sm font-medium">{studentDetail.name || 'Not provided'}</p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">Registration Number</Label>
+                                            <p className="text-sm font-medium">{studentDetail.registrationNumber || 'Not provided'}</p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">Gender</Label>
+                                            <p className="text-sm font-medium">{studentDetail.gender || 'Not specified'}</p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">Date of Birth</Label>
+                                            <p className="text-sm font-medium">{formatDate(studentDetail.dob)}</p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">Age</Label>
+                                            <p className="text-sm font-medium">{studentDetail.age || 'Not provided'}</p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">Tag</Label>
+                                            <Badge variant="secondary" className="text-xs">
+                                                {studentDetail.tag || 'No tag'}
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* Academic Information */}
+                            <Card>
+                                <CardHeader className="flex flex-row items-center justify-between">
+                                    <div>
+                                        <CardTitle className="flex items-center gap-2">
+                                            <GraduationCap className="h-5 w-5" />
+                                            Academic Information
+                                        </CardTitle>
+                                        <CardDescription>
+                                            Complete academic performance details
+                                        </CardDescription>
+                                    </div>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => setShowAcademicInfoForm(true)}
+                                    >
+                                        <Edit3 className="h-4 w-4 mr-2" />
+                                        Edit
+                                    </Button>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">CGPA</Label>
+                                            <p className="text-sm font-medium">{studentDetail.cgpa || 'Not provided'}</p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">Branch</Label>
+                                            <p className="text-sm font-medium">{studentDetail.branch || 'Not specified'}</p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">Batch Year</Label>
+                                            <p className="text-sm font-medium">{studentDetail.year || 'Not provided'}</p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">Type</Label>
+                                            <p className="text-sm font-medium">{studentDetail.type || 'Not specified'}</p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">10th Marks</Label>
+                                            <p className="text-sm font-medium">{studentDetail.tenthMarks || 'Not provided'}%</p>
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium text-muted-foreground">12th Marks</Label>
+                                            <p className="text-sm font-medium">{studentDetail.twelfthMarks || 'Not provided'}%</p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+
+                        {/* Account Status & Resume Card */}
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Settings className="h-5 w-5" />
+                                        Account Status & Documents
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Account verification status and document management
+                                    </CardDescription>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => setShowAdditionalInfoForm(true)}
+                                    >
+                                        <Edit3 className="h-4 w-4 mr-2" />
+                                        Edit Profile
+                                    </Button>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm"
+                                        onClick={() => setShowResumeInfoForm(true)}
+                                    >
+                                        <FileText className="h-4 w-4 mr-2" />
+                                        Manage Resume
+                                    </Button>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                    <div className="text-center p-4 border rounded-lg">
+                                        <div className="mb-2">
+                                            <Badge variant={getStatusVariant(studentDetail.status)} className="text-sm">
+                                                {studentDetail.status === true ? 'Active Account' : 'Pending Verification'}
+                                            </Badge>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">Account Status</p>
+                                    </div>
+                                    
+                                    <div className="text-center p-4 border rounded-lg">
+                                        <div className="mb-2">
+                                            <Badge variant={studentDetail.placed ? "default" : "secondary"} className="text-sm">
+                                                {studentDetail.placed ? 'Placed' : 'Available for Placement'}
+                                            </Badge>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">Placement Status</p>
+                                    </div>
+                                    
+                                    <div className="text-center p-4 border rounded-lg">
+                                        <div className="mb-2">
+                                            <Badge variant={studentDetail.file ? "default" : "destructive"} className="text-sm">
+                                                {studentDetail.file ? 'Resume Uploaded' : 'Resume Missing'}
+                                            </Badge>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">Resume Status</p>
+                                        {studentDetail.file && (
+                                            <Button 
+                                                variant="ghost" 
+                                                size="sm" 
+                                                onClick={downloadResume}
+                                                className="mt-2 h-6 text-xs"
+                                            >
+                                                <Download className="h-3 w-3 mr-1" />
+                                                Download
+                                            </Button>
+                                        )}
+                                    </div>
+                                    
+                                    <div className="text-center p-4 border rounded-lg">
+                                        <div className="mb-2">
+                                            <Badge variant="outline" className="text-sm">
+                                                {studentDetail.role || 'Student'}
+                                            </Badge>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground">Account Type</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Academic Tab */}
+                    <TabsContent value="academic">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Academic Records</CardTitle>
+                                <CardDescription>Detailed academic information and performance metrics</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        <Card className="p-4">
+                                            <div className="text-center">
+                                                <div className="text-2xl font-bold text-primary">{studentDetail.cgpa || 'N/A'}</div>
+                                                <div className="text-sm text-muted-foreground">Current CGPA</div>
+                                            </div>
+                                        </Card>
+                                        <Card className="p-4">
+                                            <div className="text-center">
+                                                <div className="text-2xl font-bold text-green-600">{studentDetail.tenthMarks || 'N/A'}%</div>
+                                                <div className="text-sm text-muted-foreground">10th Grade</div>
+                                            </div>
+                                        </Card>
+                                        <Card className="p-4">
+                                            <div className="text-center">
+                                                <div className="text-2xl font-bold text-blue-600">{studentDetail.twelfthMarks || 'N/A'}%</div>
+                                                <div className="text-sm text-muted-foreground">12th Grade</div>
+                                            </div>
+                                        </Card>
+                                    </div>
+
+                                    <Separator />
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <h3 className="font-semibold mb-3">Academic Details</h3>
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between">
+                                                    <span className="text-muted-foreground">Branch:</span>
+                                                    <span className="font-medium">{studentDetail.branch || 'Not specified'}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-muted-foreground">Batch Year:</span>
+                                                    <span className="font-medium">{studentDetail.year || 'Not provided'}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-muted-foreground">Registration:</span>
+                                                    <span className="font-medium">{studentDetail.registrationNumber || 'Not provided'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold mb-3">Placement Status</h3>
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between">
+                                                    <span className="text-muted-foreground">Placed:</span>
+                                                    <Badge variant={studentDetail.placed ? "default" : "secondary"}>
+                                                        {studentDetail.placed ? 'Yes' : 'No'}
+                                                    </Badge>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-muted-foreground">Type:</span>
+                                                    <span className="font-medium">{studentDetail.type || 'Not specified'}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Resume Tab */}
+                    <TabsContent value="resume">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <FileText className="h-5 w-5" />
+                                        Resume Management
+                                    </CardTitle>
+                                    <CardDescription>
+                                        Upload and manage your resume
+                                    </CardDescription>
+                                </div>
+                                <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => setShowResumeInfoForm(true)}
+                                >
+                                    <Edit3 className="h-4 w-4 mr-2" />
+                                    Update Resume
+                                </Button>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+                                        <FileText className="h-8 w-8 text-primary" />
+                                    </div>
+                                    <div className="text-center">
+                                        <h3 className="font-semibold text-lg">
+                                            {studentDetail.name ? `${studentDetail.name}'s Resume` : 'Resume'}
+                                        </h3>
+                                        <p className="text-muted-foreground">
+                                            {studentDetail.file ? 'Your resume is available for download' : 'No resume uploaded yet'}
+                                        </p>
+                                    </div>
+                                    {studentDetail.file && (
+                                        <Button onClick={downloadResume} className="mt-4">
+                                            <Download className="h-4 w-4 mr-2" />
+                                            Download Resume
+                                        </Button>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Settings Tab */}
+                    <TabsContent value="settings">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Settings className="h-5 w-5" />
+                                    Account Settings
+                                </CardTitle>
+                                <CardDescription>
+                                    Manage your account preferences and security
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-semibold">Change Password</h3>
+                                    <div className="grid gap-4 max-w-md">
+                                        <div>
+                                            <Label htmlFor="email">Email</Label>
+                                            <Input
+                                                id="email"
+                                                type="email"
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                placeholder="Enter your email"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="current-password">Current Password</Label>
+                                            <div className="relative">
+                                                <Input
+                                                    id="current-password"
+                                                    type={showPassword ? "text" : "password"}
+                                                    value={password}
+                                                    onChange={(e) => setPassword(e.target.value)}
+                                                    placeholder="Enter current password"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                >
+                                                    {showPassword ? (
+                                                        <EyeOff className="h-4 w-4" />
+                                                    ) : (
+                                                        <Eye className="h-4 w-4" />
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="new-password">New Password</Label>
+                                            <div className="relative">
+                                                <Input
+                                                    id="new-password"
+                                                    type={showPassword ? "text" : "password"}
+                                                    value={newPassword}
+                                                    onChange={(e) => setNewPassword(e.target.value)}
+                                                    placeholder="Enter new password"
+                                                />
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                >
+                                                    {showPassword ? (
+                                                        <EyeOff className="h-4 w-4" />
+                                                    ) : (
+                                                        <Eye className="h-4 w-4" />
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        <Button onClick={updatePassword} className="w-fit">
+                                            Update Password
+                                        </Button>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+
+                    {/* Rules Tab */}
+                    <TabsContent value="rules">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Shield className="h-5 w-5" />
+                                    Placement Rules & Guidelines
+                                </CardTitle>
+                                <CardDescription>
+                                    Important rules and regulations for the placement process
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="prose prose-sm max-w-none">
+                                    {placementRules.length > 0 ? (
+                                        <ul className="space-y-3">
+                                            {placementRules.map((rule, index) => (
+                                                <li key={index} className="text-sm leading-relaxed">
+                                                    {rule}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <div className="text-center py-8">
+                                            <Shield className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                                            <p className="text-muted-foreground">No placement rules available</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
+                </Tabs>
+            </div>
+
+            {/* Modal Forms */}
+            <PersonalInfoForm 
+                handleClosePersonalInfoForm={() => setShowPersonalInfoForm(false)}
+                onDataUpdate={getStudentDetails}
+                alertOpen={showPersonalInfoForm}
+                setAlertOpen={setShowPersonalInfoForm}
+            />
+            <AcademicInfoForm 
+                handleCloseAcademicInfoForm={() => setShowAcademicInfoForm(false)}
+                onDataUpdate={getStudentDetails}
+                alertOpen={showAcademicInfoForm}
+                setAlertOpen={setShowAcademicInfoForm}
+            />
+            <AdditionalInfoForm 
+                handleCloseAdditionalInfoForm={() => setShowAdditionalInfoForm(false)}
+                onDataUpdate={getStudentDetails}
+                alertOpen={showAdditionalInfoForm}
+                setAlertOpen={setShowAdditionalInfoForm}
+            />
+            <ResumeInfoForm 
+                handleCloseResumeInfoForm={() => setShowResumeInfoForm(false)}
+                onDataUpdate={getStudentDetails}
+                alertOpen={showResumeInfoForm}
+                setAlertOpen={setShowResumeInfoForm}
+            />
         </div>
-    )
+    );
 };
 
 export default Dashboard;

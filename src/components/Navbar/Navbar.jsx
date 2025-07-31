@@ -43,7 +43,11 @@ const Navbar = () => {
   let userName = 'User';
   
   if (parsedData) {
-    if (parsedData.newStudent) {
+    // Handle different user data formats from login/signup
+    if (parsedData.student) {
+      userRole = parsedData.student.role || 'student';
+      userName = parsedData.student.name || 'Student';
+    } else if (parsedData.newStudent) {
       userRole = parsedData.newStudent.role || 'student';
       userName = parsedData.newStudent.name || 'Student';
     } else if (parsedData.user) {
