@@ -4,23 +4,23 @@ import './EditJob.css';
 import axios from 'axios';
 import { buildApiUrl } from '../../utils/config';
 
-const JobInfoForm = ({ handleCloseJobInfoForm }) => {
+const JobInfoForm = ({ handleCloseJobInfoForm, job }) => {
   const [formData, setFormData] = useState({
-    companyCode:'',
-    companyName: '',
-    city: '',
-    duration: '',
-    ctc: '',
-    cgpa:'',
-    startDate:'',
-    applyDeadlineDate:'',
-    applyDeadlineTime:'',
-    category: null,
-    years: [],
-    branch: [],
-    type: [],
-    status: 'Upcoming', // Initial status
-    imgPath: null, // For storing the selected image file
+    companyCode: job?.companyCode || '',
+    companyName: job?.companyName || '',
+    city: job?.city || '',
+    duration: job?.duration || '',
+    ctc: job?.ctc || '',
+    cgpa: job?.cgpa || '',
+    startDate: job?.startDate || '',
+    applyDeadlineDate: job?.applyDeadlineDate || '',
+    applyDeadlineTime: job?.applyDeadlineTime || '',
+    category: job?.category || null,
+    years: job?.years || [],
+    branch: job?.branch || [],
+    type: job?.type || [],
+    status: job?.status || 'Upcoming', // Initial status
+    imgPath: job?.imgPath || null, // For storing the selected image file
   });
 
   const YearOptions = [

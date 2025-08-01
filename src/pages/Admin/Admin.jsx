@@ -1,595 +1,513 @@
-import React, { useState, useEffect, useRef } from 'react';
-import './Admin.css';
-import $ from 'jquery';
-import 'datatables.net'; // Import DataTables library
-import 'datatables.net-dt/css/dataTables.dataTables.css'; // Import DataTables CSS
-import EditStudentDetails from './EditStudentDetails';
-import EditPlacementDetails from './EditPlacementDetails'
-import EditJob from './EditJob'
-import EditInterview from './EditInterview'
-import EditDrop from './EditDrop'
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { 
+  Users, 
+  UserPlus, 
+  Briefcase, 
+  Calendar, 
+  MessageSquare, 
+  Settings, 
+  Search,
+  Edit3,
+  Trash2,
+  Download,
+  Plus,
+  Eye,
+  FileText,
+  Building,
+  Clock,
+  MapPin
+} from 'lucide-react';
+import { toast } from 'react-toastify';
 import axios from 'axios';
-import ResumeDownloadButton from '../../components/ResumeDownloadButton/ResumeDownloadButton'; // Importing the ResumeDownloadButton component
-import { buildApiUrl } from '../../utils/config';
+import { buildApiUrl } from '@/utils/config';
+
+// Import table components
+import StudentsTable from '@/components/StudentsTable';
+import JobsTable from '@/components/JobsTable';
+import InterviewsTable from '@/components/InterviewsTable';
+import DropsTable from '@/components/DropsTable';
+import RequestsTable from '@/components/RequestsTable';
+import RulesTable from '@/components/RulesTable';
+
+// Import modal components
+import StudentInfoForm from './EditStudentDetails';
+import JobInfoForm from './EditJob';
+import InterviewInfoForm from './EditInterview';
+import DropInfoForm from './EditDrop';
+import PlacementInfoForm from './EditPlacementDetails';
 
 
 const Admin = () => {
-    const [dropData, setDropData] = useState([]);
-
-    const [selectedButton, setSelectedButton] = useState(0);
-    const [studentData, setStudentData]= useState('')
-    const [showStudentTable, setShowStudentTable] = useState(true);
-    const [showDropTable, setShowDropTable] = useState(false);
-    const [showRequestTable, setshowRequestTable]=useState(false);
-    const [requestData, setrequestData]=useState([]);
-
-    const[interviewData, setInterviewData]=useState([]);
-    const [showAssignInterviews, setShowAssignInterviews]= useState(false)
+    // State management
+    const [activeTab, setActiveTab] = useState('students');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(false);
     
+    // Data states
+    const [students, setStudents] = useState([]);
+    const [jobs, setJobs] = useState([]);
+    const [interviews, setInterviews] = useState([]);
+    const [drops, setDrops] = useState([]);
+    const [interviewRequests, setInterviewRequests] = useState([]);
+    const [placementRules, setPlacementRules] = useState([]);
     
-    const[jobData, setJobData]=useState([]);
-    const [showJob, setShowJob]= useState(false)
-  
-    const pdfValue = 'Your PDF value goes here...';
+    // Modal states
+    const [showStudentModal, setShowStudentModal] = useState(false);
+    const [showJobModal, setShowJobModal] = useState(false);
+    const [showInterviewModal, setShowInterviewModal] = useState(false);
+    const [showDropModal, setShowDropModal] = useState(false);
+    const [showRulesModal, setShowRulesModal] = useState(false);
+    
+    // Edit states
+    const [editingStudent, setEditingStudent] = useState(null);
+    const [editingJob, setEditingJob] = useState(null);
+    const [editingInterview, setEditingInterview] = useState(null);
+    const [editingDrop, setEditingDrop] = useState(null);
 
-    // const [tableData, setTableData] = useState([
-    //     { id: 1, registrationNo: '1', email: 'john@example.com', phone: '123-456-7890', gender: 'Male', dob: '1990-01-01', status: 'Approved', resume: 'resume1.pdf' },
-    //     { id: 2, registrationNo: '2', email: 'jane@example.com', phone: '987-654-3210', gender: 'Female', dob: '1992-05-15', status: 'Rejected', resume: 'resume2.pdf' },
-    //     { id: 3, registrationNo: '3', email: 'alice@example.com', phone: '555-555-5555', gender: 'Female', dob: '1988-10-20', status: 'Approved', resume: 'resume3.pdf' },
-    //     // Add more rows as needed
-    // ]);
-    const [tableData, setTableData] = useState([]);
-
-    const getStudentDetails = async () => {
+    // API Functions
+    const fetchStudents = async () => {
         try {
-            const response = await axios.get(buildApiUrl('getAllStudents'));
-            setStudentData(response.data);
-            console.log("response data is", response.data);
-    
-            // Extracting student details and formatting them for the table
-            const formattedData = response.data.map((student, index) => ({
-                id: index + 1,
-                registrationNo: student.registrationNumber,
-                email: student.email,
-                phone: student.phoneNumber || 'N/A',
-                gender: student.gender,
-                dob: student.dob ? new Date(student.dob).toISOString().split('T')[0] : 'N/A',
-                status: student.status ? 'Approved' : 'Rejected',
-                // Assuming resume details are not available in the fetched data
-                resume: 'N/A',
-            }));
-    
-            // Setting the formatted data to the tableData state
-            setTableData(formattedData);
+            setLoading(true);
+            const response = await axios.get(buildApiUrl('students'));
+            setStudents(response.data);
         } catch (error) {
-            console.error("Error fetching student details:", error.message);
+            console.error('Error fetching students:', error);
+            toast.error('Failed to fetch students');
+        } finally {
+            setLoading(false);
         }
     };
 
-    
-    const getJobs = async () => {
+    const fetchJobs = async () => {
         try {
+            setLoading(true);
             const response = await axios.get(buildApiUrl('jobs'));
-            // setJobData(response.data);
-            console.log("response data is---------", response.data);
-    
-            // Extracting student details and formatting them for the table
-            const formattedData = response.data.map((company, index) => ({
-                id: company._id,
-                companyName: company.companyName,
-                city: company.city,
-                ctc: company.ctc,
-                startDate: company.startDate,
-                applyDeadlineDate: company.applyDeadlineDate,
-                applyDeadlineTime: company.applyDeadlineTime,
-                status: company.status,
-            }));
-    
-            // Setting the formatted data to the tableData state
-            setJobData(formattedData);
+            setJobs(response.data);
         } catch (error) {
-            console.error("Error fetching student details:", error.message);
+            console.error('Error fetching jobs:', error);
+            toast.error('Failed to fetch jobs');
+        } finally {
+            setLoading(false);
         }
     };
-    
-    
-    const tableRef = useRef(null);
 
-    const getDropDetails = async () => {
+    const fetchInterviews = async () => {
         try {
+            setLoading(true);
+            const response = await axios.get(buildApiUrl('interviews'));
+            setInterviews(response.data);
+        } catch (error) {
+            console.error('Error fetching interviews:', error);
+            toast.error('Failed to fetch interviews');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchDrops = async () => {
+        try {
+            setLoading(true);
             const response = await axios.get(buildApiUrl('drops'));
-            console.log("response data is", response.data);
-    
-            const formattedData = response.data.map((drop, index) => ({
-                id: drop._id,
-                subject: drop.subject,
-                message: drop.message,
-                years: drop.years.length>0?drop.years: 'N/A',
-                branch: drop.branch.length>0?drop.branch : 'N/A',
-                type: drop.type.length>0? drop.type : 'N/A',
-            }));
-    
-            setDropData(formattedData);
+            setDrops(response.data);
         } catch (error) {
-            console.error("Error fetching drop details:", error.message);
+            console.error('Error fetching drops:', error);
+            toast.error('Failed to fetch drops');
+        } finally {
+            setLoading(false);
         }
     };
 
-    const getInterviewsDetails = async () => {
+    const fetchInterviewRequests = async () => {
         try {
-            const response = await axios.get(buildApiUrl('Interviews'));
-            console.log("response data is", response.data);
-            const formattedData = response.data.map((interview) => ({
-                id: interview._id,
-                platform: interview.platform,
-                date: interview.date,
-                time: interview.time,
-                theme: interview.theme,
-                duration: interview.duration,
-                softwareRequirement: interview.softwareRequirement,
-                joiningLink: interview.joiningLink,
-                registrationNumber: interview.students,
-                createdAt: interview.createdAt,
-                updatedAt: interview.updatedAt,
-                mockInterviewId: interview.mockInterviewId,
-            }));
-            
-    
-            setInterviewData(formattedData);
-        } catch (error) {
-            console.error("Error fetching drop details:", error.message);
-        }
-    };
-
-    const getrequestDetails = async () => {
-        try {
+            setLoading(true);
             const response = await axios.get(buildApiUrl('InterviewAsks'));
-            console.log("response data is---------", response.data);
-    
-            const formattedData = response.data.map((item, index) => ({
-                student_id: item.student_id,
-                registrationNumber:item.registrationNumber,
-                targetRole: item.targetRole,
-                potentialDate: new Date(item.potentialDate).toLocaleDateString(), // Format date as YYYY-MM-DD
-                potentialTime: item.potentialTime,
-                potentialDuration: item.potentialDuration,
-                targetCompany: item.targetCompany,
-                currentTime: item.currentTime,
-                currentDate:item.currentDate // Format date as YYYY-MM-DD
-              }));
-            
-    
-            setrequestData(formattedData);
+            setInterviewRequests(response.data);
         } catch (error) {
-            console.error("Error fetching drop details:", error.message);
+            console.error('Error fetching interview requests:', error);
+            toast.error('Failed to fetch interview requests');
+        } finally {
+            setLoading(false);
         }
     };
 
-
-
-    const deleteDrop=async(drop_id)=>{
-        try{
-            const storedData = localStorage.getItem('userData');
-            if (!storedData) return;
-            var parsedData = JSON.parse(storedData);
-            console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
-            var student_id=parsedData.newStudent._id;
-              
-            const response=await axios.delete(buildApiUrl(`Deletedrops/${drop_id}`));
-            window.location.reload();
-
+    const fetchPlacementRules = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(buildApiUrl('placementRules'));
+            setPlacementRules(response.data[0]?.rules || []);
+        } catch (error) {
+            console.error('Error fetching placement rules:', error);
+            toast.error('Failed to fetch placement rules');
+        } finally {
+            setLoading(false);
         }
-        catch (error) {
-            console.error("Error fetching drop details:", error.message);
-        }    }
+    };
 
-        const deleteInterview=async(drop_id)=>{
-            try{
+    // Delete functions
+    const deleteStudent = async (studentId) => {
+        try {
+            await axios.delete(buildApiUrl(`students/${studentId}`));
+            toast.success('Student deleted successfully');
+            fetchStudents();
+        } catch (error) {
+            console.error('Error deleting student:', error);
+            toast.error('Failed to delete student');
+        }
+    };
 
-                // var parsedData = JSON.parse(drop_id);
-                // console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
-                // var student_id=parsedData.newStudent._id;
-                  
-                const response=await axios.delete(buildApiUrl(`DeleteInterview/${drop_id}`));
-                window.location.reload();
+    const deleteJob = async (jobId) => {
+        try {
+            await axios.delete(buildApiUrl(`DeleteJob/${jobId}`));
+            toast.success('Job deleted successfully');
+            fetchJobs();
+        } catch (error) {
+            console.error('Error deleting job:', error);
+            toast.error('Failed to delete job');
+        }
+    };
 
-            }
-            catch (error) {
-                console.error("Error fetching drop details:", error.message);
-            }    }
-            const deleteJob=async(job_id)=>{
-                try{
-    
-                    // var parsedData = JSON.parse(drop_id);
-                    // console.log("stored json data is",parsedData); // Output: { name: 'John', age: 30 }
-                    // var student_id=parsedData.newStudent._id;
-                      
-                    const response=await axios.delete(buildApiUrl(`DeleteJob/${job_id}`));
-                    window.location.reload();
+    const deleteInterview = async (interviewId) => {
+        try {
+            await axios.delete(buildApiUrl(`DeleteInterview/${interviewId}`));
+            toast.success('Interview deleted successfully');
+            fetchInterviews();
+        } catch (error) {
+            console.error('Error deleting interview:', error);
+            toast.error('Failed to delete interview');
+        }
+    };
 
-                }
-                catch (error) {
-                    console.error("Error fetching drop details:", error.message);
-                }    }
+    const deleteDrop = async (dropId) => {
+        try {
+            await axios.delete(buildApiUrl(`Deletedrops/${dropId}`));
+            toast.success('Drop deleted successfully');
+            fetchDrops();
+        } catch (error) {
+            console.error('Error deleting drop:', error);
+            toast.error('Failed to delete drop');
+        }
+    };
 
-
-    
-
-
-useEffect(() => {
-    const initializeDataTable = () => {
-        if (tableRef.current && tableData.length > 0) {
-            // Initialize DataTables
-            const dataTable = $(tableRef.current).DataTable({
-                "autoWidth": true, // Automatically adjust column widths
-                "columnDefs": [
-                    { "width": "auto", "targets": "_all" } // Set all columns to auto width
-                ]
+    // Download resume function
+    const downloadResume = async (studentId, studentName) => {
+        try {
+            const response = await axios.get(buildApiUrl(`downloadResume/${studentId}`), {
+                responseType: 'blob'
             });
-
-            // Enable searching
-            dataTable.search('').draw();
-
-            // Apply the DataTables search functionality to the table
-            $('#dropSearch').on('keyup', function () {
-                dataTable.search(this.value).draw();
-            });
+            
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${studentName}_resume.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            
+            toast.success('Resume downloaded successfully');
+        } catch (error) {
+            console.error('Error downloading resume:', error);
+            toast.error('Failed to download resume');
         }
     };
 
-    initializeDataTable();
+    // Filter functions
+    const filteredStudents = students.filter(student =>
+        student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        student.registrationNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-    return () => {
-        // Cleanup function to destroy DataTable instance
-        if ($.fn.DataTable.isDataTable(tableRef.current)) {
-            $(tableRef.current).DataTable().destroy();
+    const filteredJobs = jobs.filter(job =>
+        job.companyName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        job.city?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-        }
+    const filteredInterviews = interviews.filter(interview =>
+        interview.platform?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        interview.theme?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const filteredDrops = drops.filter(drop =>
+        drop.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        drop.message?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Format date helper
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString('en-GB');
     };
-}, [tableData]);
+
+    // Format time helper
+    const formatTime = (timeString) => {
+        if (!timeString) return 'N/A';
+        return timeString;
+    };
+
 
     
+    // Initialize data on component mount
+    useEffect(() => {
+        fetchStudents();
+        fetchJobs();
+        fetchInterviews();
+        fetchDrops();
+        fetchInterviewRequests();
+        fetchPlacementRules();
+    }, []);
 
-    useEffect(()=>{
-        getStudentDetails();
-    },[])
-
-    const handleButtonClick = (buttonId) => {
-        setSelectedButton(buttonId);
-        if(buttonId==1) setStudentFormOpen(true)
-        if(buttonId==2) setPlacementFormOpen(true)
-        if(buttonId==3) setJobFormOpen(true)
-        if(buttonId==4) setInterviewFormOpen(true)
-            if (buttonId === 5) {
-                setDropFormOpen(true);
-                setShowDropTable(true)
-                setshowRequestTable(false);
-                setShowStudentTable(false);
-                setShowAssignInterviews(false)
-                setShowJob(false)
-
-
-                getDropDetails();
-            }
-            if (buttonId === 6) {
-                setDropFormOpen(false);
-                setShowStudentTable(false)
-                setshowRequestTable(true)
-                setShowAssignInterviews(false)
-                setShowJob(false)
-
-                getrequestDetails();
-            }   
-            if (buttonId === 7) {
-                setDropFormOpen(false);
-                setShowStudentTable(false)
-                setshowRequestTable(false)
-                setShowAssignInterviews(true)
-                setShowJob(false)
-
-                getInterviewsDetails();
-            }  
-            if (buttonId === 8) {
-                setDropFormOpen(false);
-                setShowStudentTable(false)
-                setshowRequestTable(false)
-                setShowAssignInterviews(false)
-                setShowJob(true)
-
-                getJobs();
-            }             
-    };
-
-    const handleDownloadResume = (resumeFilename) => {
-        // Implement logic to download the resume PDF
-        console.log('Downloading resume:', resumeFilename);
-    };
-
-    const [StudentFormOpen, setStudentFormOpen] = useState(true);
-
-    const handleCloseStudentInfoForm = () => {
-      setStudentFormOpen(false);
-    };
-
-    const [PlacementFormOpen, setPlacementFormOpen] = useState(true);
-
-    const handleClosePlacementInfoForm = () => {
-      setPlacementFormOpen(false);
-    };
-
-
-    const [JobFormOpen, setJobFormOpen] = useState(true);
-
-    const handleCloseJobInfoForm = () => {
-      setJobFormOpen(false);
-    };
-
-    const [InterviewFormOpen, setInterviewFormOpen] = useState(true);
-
-    const handleCloseInterviewInfoForm = () => {
-      setInterviewFormOpen(false);
-    };
-
-    const [DropFormOpen, setDropFormOpen] = useState(true);
-
-    const handleCloseDropInfoForm = () => {
-      setDropFormOpen(false);
-    };
-
-    const handleDeleteDrop = () => {
-        // Implement delete drop logic
-        getDropDetails();
-        setShowDropTable(true);
-        setShowAssignInterviews(false)
-        setShowStudentTable(false);
-        setshowRequestTable(false);
-        setShowJob(false)
-
-    };
-
-    const handleViewStudent = () => {
-        setShowStudentTable(true);
-        setshowRequestTable(false);
-        setShowDropTable(false);
-        setShowAssignInterviews(false)
-        setShowJob(false)
-
-
-
-    };
-
-    
-    const handleViewRequest = () => {
-        getrequestDetails()
-        setShowStudentTable(false);
-        setshowRequestTable(true);
-        setShowDropTable(false);
-        setShowAssignInterviews(false)
-        setShowJob(false)
-
-
-
-    };
-    const handleViewInterview = () => {
-        getInterviewsDetails()
-        setShowStudentTable(false);
-        setshowRequestTable(false);
-        setShowDropTable(false);
-        setShowAssignInterviews(true)
-        setShowJob(false)
-
-
-
-    };
-    const handleShowJob = () => {
-        getJobs()
-        setShowStudentTable(false);
-        setshowRequestTable(false);
-        setShowDropTable(false);
-        setShowAssignInterviews(false)
-        setShowJob(true)
-
-
-
-    };
-
-
+    // Handle tab change
+    useEffect(() => {
+        setSearchTerm(''); // Clear search when switching tabs
+    }, [activeTab]);
 
     return (
-        <div>
-            <div className="Buttons">
-                {/* <div><button className={selectedButton === 1 ? 'selected' : ''} onClick={() => handleButtonClick(1)}>Edit Student Details</button></div> */}
-                {/* <div><button className={selectedButton === 2 ? 'selected' : ''} onClick={() => handleButtonClick(2)}>Edit Placement rules</button></div> */}
-                <div><button className={selectedButton === 3 ? 'selected' : ''} onClick={() => handleButtonClick(3)}>Add Job</button></div>
-                <div><button className={selectedButton === 4 ? 'selected' : ''} onClick={() => handleButtonClick(4)}>Add Interviews</button></div>
-                <div><button className={selectedButton === 5 ? 'selected' : ''} onClick={() => handleButtonClick(5)}>Add Drops</button></div>
-                <div><button onClick={handleDeleteDrop}>Delete Drop</button></div>
-                <div><button onClick={handleViewStudent}>View Student</button></div>
-                <div><button onClick={handleViewRequest}>Interview Request</button></div>
-                <div><button onClick={handleViewInterview}>Assigned Interview</button></div>
-                <div><button onClick={handleShowJob}>Assigned Jobs</button></div>
-            </div>
-            {selectedButton === 1 && StudentFormOpen && <EditStudentDetails handleCloseStudentInfoForm={handleCloseStudentInfoForm} />}
-            {selectedButton === 2 && PlacementFormOpen && <EditPlacementDetails handleClosePlacementInfoForm={handleClosePlacementInfoForm} />}
-            {selectedButton === 3 && JobFormOpen && <EditJob handleCloseJobInfoForm={handleCloseJobInfoForm} />}
-            {selectedButton === 4 && InterviewFormOpen && <EditInterview handleCloseInterviewInfoForm={handleCloseInterviewInfoForm} />}
-            {selectedButton === 5 && DropFormOpen && <EditDrop handleCloseDropInfoForm={handleCloseDropInfoForm} />}
-           
-            <div className="admin_power">
-            {showDropTable && (
-                <div className='TableContainer'>
-                    <table ref={tableRef} className='DataTable'>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Subject</th>
-                                <th>Message</th>
-                                <th>Years</th>
-                                <th>branch</th>
-                                <th>type</th>
-                                <th>Delete</th>
-
-                                {/* Add more columns as needed */}
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {dropData.map((rowData) => (
-                            <tr key={rowData.id}>
-                                <td><input type="radio" name="selectedRow" value={rowData.id} /></td>
-                                <td>{rowData.subject}</td>
-                                <td>{rowData.message}</td>
-                                <td>{Array.isArray(rowData.years) ? rowData.years.join(', ') : rowData.years}</td>
-                                <td>{Array.isArray(rowData.branch) ? rowData.branch.join(', ') : rowData.branch}</td>
-                                <td>{Array.isArray(rowData.type) ? rowData.type.join(', ') : rowData.type}</td>
-                                <td><button onClick={() => deleteDrop(rowData.id)}>Delete</button></td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-            {showJob && (
-                <div className='TableContainer'>
-                    <table ref={tableRef} className='DataTable'>
-                        <thead>
-                            <tr>
-                                <th>Company</th>
-                                <th>City</th>
-                                <th>CTC(Annual)</th>
-                                <th>Start Date</th>
-                                <th>Deadline Date</th>
-                                <th>Deadline Time</th>
-                                <th>Operation</th>
-
-
-                                {/* Add more columns as needed */}
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {jobData.map((rowData) => (
-                            <tr key={rowData.id}>
-                                <td>{rowData.companyName}</td>
-                                <td>{rowData.city}</td>
-                                <td>{rowData.ctc}</td>
-                                <td>{rowData.startDate}</td>
-                                <td>{rowData.applyDeadlineDate}</td>
-                                <td>{rowData.applyDeadlineTime}</td>
-                                <td><button onClick={() => deleteJob(rowData.id)}>Delete</button></td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-            {showStudentTable && (
-                <div className="admin_power">
-                    <div className='TableContainer'>
-                        <table ref={tableRef} className='DataTable'>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Registration No</th>
-                                    <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Gender</th>
-                                    <th>DOB</th>
-                                    <th>Status</th>
-                                    <th>Resume</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {tableData.map((rowData, rowIndex) => (
-                                    <tr key={rowData.id}>
-                                        <td><input type="radio" name="selectedRow" value={rowData.id} /></td>
-                                        <td>{rowData.registrationNo}</td>
-                                        <td>{rowData.email}</td>
-                                        <td>{rowData.phone}</td>
-                                        <td>{rowData.gender}</td>
-                                        <td>{rowData.dob}</td>
-                                        <td>{rowData.status}</td>
-                                        <td><ResumeDownloadButton pdfValue={pdfValue} /></td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+            {/* Header */}
+            <div className="bg-white shadow-sm border-b">
+                <div className="container mx-auto px-4 py-6">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+                            <p className="text-gray-600 mt-1">Manage students, jobs, interviews, and placement activities</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <div className="relative">
+                                <Search className="h-4 w-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                                <Input
+                                    placeholder="Search..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="pl-10 w-64"
+                                />
+                            </div>
+                        </div>
                     </div>
                 </div>
-            )}
-            {showRequestTable && (
-                <div className='TableContainer'>
-                    <table ref={tableRef} className='DataTable'>
-                        <thead>
-                            <tr>
-                                <th>Student ID</th>
-                                <th>Registration Number</th>
-                                <th>Target Role</th>
-                                <th>Potential Date</th>
-                                <th>Potential Time</th>
-                                <th>Potential Duration</th>
-                                <th>Target Company</th>
-                                <th> Request Date</th>
-                                <th> Request Time</th>
-                                {/* Add more columns as needed */}
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {requestData.map((rowData) => (
-                            <tr key={rowData.id}>
-                                {/* <td><input type="radio" name="selectedRow" value={rowData.id} /></td> */}
-                                <td>{rowData.student_id}</td>
-                                <td>{rowData.registrationNumber}</td>
-                                <td>{rowData.targetRole}</td>
-                                <td>{rowData.potentialDate}</td>
-                                <td>{rowData.potentialTime}</td>
-                                <td>{rowData.potentialDuration}</td>
-                                <td>{rowData.targetCompany}</td>
-                                <td>{rowData.currentDate}</td>
-                                <td>{rowData.currentTime}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-            {showAssignInterviews && (
-                <div className='TableContainer'>
-                    <table ref={tableRef} className='DataTable'>
-                        <thead>
-                            <tr>
-                                <th>Registration Number</th>
-                                <th>Platform</th>
-                                <th>Date</th>
-                                <th>Time</th>
-                                <th>Theme</th>
-                                <th>Duration</th>
-                                <th>softwareRequirement</th>
-                                <th>JoiningLink</th>
-                                <th>Operation</th>
-                                {/* Add more columns as needed */}
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {interviewData.map((rowData) => (
-                            <tr key={rowData.id}>
-                                {/* <td><input type="radio" name="selectedRow" value={rowData.id} /></td> */}
-                                <td>{rowData.registrationNumber}</td>
-                                <td>{rowData.platform}</td>
-                                <td>{rowData.date}</td>
-                                <td>{rowData.time}</td>
-                                <td>{rowData.theme}</td>
-                                <td>{rowData.duration}</td>
-                                <td>{rowData.softwareRequirement}</td>
-                                <td>{rowData.joiningLink}</td>
-                                <td><button onClick={() => deleteInterview(rowData.id)}>Delete</button></td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-
             </div>
+
+            {/* Main Content */}
+            <div className="container mx-auto px-4 py-8">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-6 mb-8">
+                        <TabsTrigger value="students" className="flex items-center gap-2">
+                            <Users className="h-4 w-4" />
+                            <span className="hidden sm:inline">Students</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="jobs" className="flex items-center gap-2">
+                            <Briefcase className="h-4 w-4" />
+                            <span className="hidden sm:inline">Jobs</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="interviews" className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4" />
+                            <span className="hidden sm:inline">Interviews</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="drops" className="flex items-center gap-2">
+                            <MessageSquare className="h-4 w-4" />
+                            <span className="hidden sm:inline">Drops</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="requests" className="flex items-center gap-2">
+                            <Clock className="h-4 w-4" />
+                            <span className="hidden sm:inline">Requests</span>
+                        </TabsTrigger>
+                        <TabsTrigger value="rules" className="flex items-center gap-2">
+                            <Settings className="h-4 w-4" />
+                            <span className="hidden sm:inline">Rules</span>
+                        </TabsTrigger>
+                    </TabsList>
+
+                    {/* Students Tab */}
+                    <TabsContent value="students" className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-semibold text-gray-900">Student Management</h2>
+                            <Button onClick={() => setShowStudentModal(true)}>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Student
+                            </Button>
+                        </div>
+                        <StudentsTable 
+                            students={students} 
+                            searchTerm={searchTerm}
+                            onEdit={(student) => {
+                                setEditingStudent(student);
+                                setShowStudentModal(true);
+                            }}
+                            onDelete={(id) => {
+                                deleteStudent(id);
+                            }}
+                        />
+                    </TabsContent>
+
+                    {/* Jobs Tab */}
+                    <TabsContent value="jobs" className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-semibold text-gray-900">Job Management</h2>
+                            <Button onClick={() => setShowJobModal(true)}>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Job
+                            </Button>
+                        </div>
+                        <JobsTable 
+                            jobs={jobs} 
+                            searchTerm={searchTerm}
+                            onEdit={(job) => {
+                                setEditingJob(job);
+                                setShowJobModal(true);
+                            }}
+                            onDelete={(id) => {
+                                deleteJob(id);
+                            }}
+                        />
+                    </TabsContent>
+
+                    {/* Interviews Tab */}
+                    <TabsContent value="interviews" className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-semibold text-gray-900">Interview Management</h2>
+                            <Button onClick={() => setShowInterviewModal(true)}>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Schedule Interview
+                            </Button>
+                        </div>
+                        <InterviewsTable 
+                            interviews={interviews} 
+                            searchTerm={searchTerm}
+                            onEdit={(interview) => {
+                                setEditingInterview(interview);
+                                setShowInterviewModal(true);
+                            }}
+                            onDelete={(id) => {
+                                deleteInterview(id);
+                            }}
+                        />
+                    </TabsContent>
+
+                    {/* Drops Tab */}
+                    <TabsContent value="drops" className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-semibold text-gray-900">Drop Management</h2>
+                            <Button onClick={() => setShowDropModal(true)}>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Drop
+                            </Button>
+                        </div>
+                        <DropsTable 
+                            drops={drops} 
+                            searchTerm={searchTerm}
+                            onEdit={(drop) => {
+                                setEditingDrop(drop);
+                                setShowDropModal(true);
+                            }}
+                            onDelete={(id) => {
+                                deleteDrop(id);
+                            }}
+                        />
+                    </TabsContent>
+
+                    {/* Interview Requests Tab */}
+                    <TabsContent value="requests" className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-semibold text-gray-900">Interview Requests</h2>
+                        </div>
+                        <RequestsTable 
+                            requests={interviewRequests} 
+                            searchTerm={searchTerm}
+                            onApprove={(id) => {
+                                // Handle approval logic
+                                console.log('Approve request:', id);
+                            }}
+                            onReject={(id) => {
+                                // Handle rejection logic
+                                console.log('Reject request:', id);
+                            }}
+                        />
+                    </TabsContent>
+
+                    {/* Placement Rules Tab */}
+                    <TabsContent value="rules" className="space-y-6">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-semibold text-gray-900">Placement Rules</h2>
+                            <Button onClick={() => setShowRulesModal(true)}>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Add Rule
+                            </Button>
+                        </div>
+                        <RulesTable 
+                            rules={placementRules} 
+                            searchTerm={searchTerm}
+                            onEdit={(rule) => {
+                                // Handle editing rule
+                                console.log('Edit rule:', rule);
+                            }}
+                            onDelete={(id) => {
+                                // Handle deleting rule
+                                console.log('Delete rule:', id);
+                            }}
+                        />
+                    </TabsContent>
+                </Tabs>
+            </div>
+
+            {/* Modal Components */}
+            {showStudentModal && (
+                <StudentInfoForm 
+                    handleCloseStudentInfoForm={() => {
+                        setShowStudentModal(false);
+                        setEditingStudent(null);
+                        fetchStudents(); // Refresh students data
+                    }}
+                    student={editingStudent}
+                />
+            )}
+            {showJobModal && (
+                <JobInfoForm 
+                    handleCloseJobInfoForm={() => {
+                        setShowJobModal(false);
+                        setEditingJob(null);
+                        fetchJobs(); // Refresh jobs data
+                    }}
+                    job={editingJob}
+                />
+            )}
+            {showInterviewModal && (
+                <InterviewInfoForm 
+                    handleCloseInterviewInfoForm={() => {
+                        setShowInterviewModal(false);
+                        setEditingInterview(null);
+                        fetchInterviews(); // Refresh interviews data
+                    }}
+                    interview={editingInterview}
+                />
+            )}
+            {showDropModal && (
+                <DropInfoForm 
+                    handleCloseDropInfoForm={() => {
+                        setShowDropModal(false);
+                        setEditingDrop(null);
+                        fetchDrops(); // Refresh drops data
+                    }}
+                    drop={editingDrop}
+                />
+            )}
+            {showRulesModal && (
+                <PlacementInfoForm 
+                    handleClosePlacementInfoForm={() => {
+                        setShowRulesModal(false);
+                        fetchPlacementRules(); // Refresh rules data
+                    }}
+                />
+            )}
         </div>
     );
 };

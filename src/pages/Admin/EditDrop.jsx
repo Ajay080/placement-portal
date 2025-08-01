@@ -4,13 +4,13 @@ import axios from 'axios';
 import Select from 'react-dropdown-select';
 import { buildApiUrl } from '../../utils/config';
 
-const DropInfoForm = ({ handleCloseDropInfoForm }) => {
+const DropInfoForm = ({ handleCloseDropInfoForm, drop }) => {
   const [formData, setFormData] = useState({
-    subject: '',
-    message: '',
-    years: [],
-    branch: [],
-    type: [],
+    subject: drop?.subject || '',
+    message: drop?.message || '',
+    years: drop?.years || [],
+    branch: drop?.branch || [],
+    type: drop?.type || [],
   });
 
   const handleChange = (e) => {

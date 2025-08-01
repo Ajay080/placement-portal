@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import './EditStudentDetails.css';
 
-const StudentInfoForm = ({ handleCloseStudentInfoForm }) => {
+const StudentInfoForm = ({ handleCloseStudentInfoForm, student }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    regNo: '',
-    email: '',
-    phone: '',
-    gender: '',
-    DoB: '',
-    status: 'Approved', // Initial status
+    name: student?.name || '',
+    regNo: student?.registrationNumber || '',
+    email: student?.email || '',
+    phone: student?.phone || '',
+    gender: student?.gender || '',
+    DoB: student?.DoB || '',
+    status: student?.status || 'Approved', // Initial status
   });
 
   const handleChange = (e) => {

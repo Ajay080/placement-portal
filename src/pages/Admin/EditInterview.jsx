@@ -3,17 +3,17 @@ import './EditInterview.css';
 import axios from 'axios';
 import { buildApiUrl } from '../../utils/config';
 
-const InterviewInfoForm = ({ handleCloseInterviewInfoForm }) => {
+const InterviewInfoForm = ({ handleCloseInterviewInfoForm, interview }) => {
   const [formData, setFormData] = useState({
-    platform: '',
-    date: '',
-    time: '',
-    theme:'',
-    softwareRequirement: '',
-    joiningLink: '',
-    duration:0,
-    image: null, // For storing the selected image file
-    students:''
+    platform: interview?.platform || '',
+    date: interview?.date || '',
+    time: interview?.time || '',
+    theme: interview?.theme || '',
+    softwareRequirement: interview?.softwareRequirement || '',
+    joiningLink: interview?.joiningLink || '',
+    duration: interview?.duration || 0,
+    image: interview?.image || null, // For storing the selected image file
+    students: interview?.students || ''
   });
 
   // const handleChange = (e) => {
